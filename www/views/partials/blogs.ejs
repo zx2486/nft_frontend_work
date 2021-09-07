@@ -1,0 +1,119 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+	<!-- ##### Blog Area Start ##### -->
+    <section class="blog-area section-padding-100">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-12 col-md-9">
+                    <div class="row">
+					<% items.forEach(function(onecat) { %>
+					<!-- Single Blog Post -->
+					<div class="col-12 col-sm-6">
+						<div class="single-blog-area wow fadeInUp" data-wow-delay="0.2s">
+							<!-- Post Thumbnail -->
+							<div class="blog_thumbnail">
+								<img src="/<%= onecat.img %>" alt="">
+							</div>
+							<!-- Post Content -->
+							<div class="blog-content">
+								
+								<div class="post-meta">
+									<p>By <a href="/profile/<%= onecat.authorid %>" class="post-author"><%= onecat.author %></a> 
+									<a href="/blog/<%= onecat.itemid %>"><%= onecat.endbidtime %></a> 
+									<a href="/blog/<%= onecat.itemid %>" class="post-comments"><%= onecat.comments %> comments</a></p>
+								</div>
+								<a href="/blog/<%= onecat.itemid %>" class="post-title">
+									<h4><%= onecat.title %></h4>
+								</a>
+								<p><%= onecat.description %></p>
+								<a href="/blog/<%= onecat.itemid %>" class="btn more-btn mt-15">Read Details</a>
+							</div>
+						</div>
+					</div>
+					
+					<% }) %>
+					</div>
+				</div>
+				
+				<div class="col-12 col-md-3">
+                    <div class="sidebar-area">
+
+                        <!-- Search Widget -->
+                        <div class="search-widget-area mb-50 wow fadeInUp" data-wow-delay="0.2s">
+                            <form action="#" method="post">
+                                <input type="search" name="search" id="search" placeholder="Search...">
+                                <button type="submit" class="btn"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
+
+                        <!-- Don't Miss Widget -->
+                        <div class="donnot-miss-widget mb-50">
+                            <div class="widget-title wow fadeInUp" data-wow-delay="0.3s">
+                                <h5>Don't miss</h5>
+                            </div>
+							<% features.forEach(function(onecat) { %>
+							<!-- Single Don't Miss Post -->
+                            <div class="single-dont-miss-post mb-30 wow fadeInUp" data-wow-delay="0.4s">
+                                <div class="dont-miss-post-thumb">
+                                    <img src="/<%= onecat.img %>" alt="">
+                                </div>
+                                <div class="dont-miss-post-content">
+                                    <a href="/blog/<%= onecat.itemid %>"><%= onecat.title %></a>
+                                    <span><%= onecat.endbidtime %></span>
+                                </div>
+                            </div>
+							
+							<% }) %>
+						</div>
+						<!-- Subscribe Widget -->
+                        <div class="subscribe-widget mb-50">
+                            <div class="widget-title wow fadeInUp" data-wow-delay="0.9s">
+                                <h5>subscribe</h5>
+                            </div>
+                            <div class="subscribe-form wow fadeInUp" data-wow-delay="1s">
+                                <form action="#">
+                                    <input type="email" name="email" id="subs_email" placeholder="Your Email">
+                                    <button type="submit" class="btn">subscribe</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+			<div class="row">
+                <div class="col-12 col-md-9">
+                    <div class="dream-pagination wow fadeInUp" data-wow-delay="0.8s">
+                        <nav>
+                            <ul class="pagination justify-content-center">
+								<% for (var i =1; i <=totalItems;  i+=10 ) { %>
+                                <li class="page-item"><a class="page-link" href="#"><%= i %></a></li>
+								<% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Blog Area End ##### -->

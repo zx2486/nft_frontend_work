@@ -1,0 +1,304 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+
+
+	<!-- ##### Area Start ##### -->
+    <section class="blog-area section-padding-100">
+        <div class="container">
+
+            <div class="row">
+				<% if(typeof profile != "undefined"){ %>
+                <div class="col-12 col-lg-3">
+					<% if(typeof editID != "undefined"){ %>
+					<!--<form method="post" target="/editprofile" enctype="multipart/form-data">-->
+					<div class="service_single_content collection-item">
+                        <!-- Icon -->
+                        <div class="collection_icon">
+                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+								<label class="btn" for="my-file-selector">
+									<input id="my-file-selector" name="profile-image" type="file" class="d-none">
+									Change Image
+								</label>
+							</img>
+							
+                        </div>
+						
+                        <span class="aut-info">
+                            <img src="/img/authors/2.png" width="50" alt="">
+							<label class="btn" for="my-file-selector2">
+								<input id="my-file-selector2" name="profile-image2" type="file" class="d-none">
+								Change<br>Profile
+							</label>
+                        </span>
+						<style>
+						.collection_icon .btn {
+							position: absolute;
+							top: 8%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							-ms-transform: translate(-50%, -50%);
+							background-color: transparent;
+							color: white;
+							font-size: small;
+							border: none;
+							cursor: pointer;
+							border-radius: 5px;
+							opacity: 0;
+							line-height: 500%;
+							width: 80%;
+							height: 13%;
+							text-align: center;
+						}
+						.collection_icon .btn:hover {
+							background-color: black;
+							opacity: 0.5;
+						}
+						.aut-info .btn {
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							-ms-transform: translate(-50%, -50%);
+							background-color: transparent;
+							color: white;
+							font-size: smaller;
+							border: none;
+							cursor: pointer;
+							border-radius: 5px;
+							opacity: 0;
+						}
+						.aut-info .btn:hover {
+							background-color: black;
+							opacity: 1;
+						}
+						</style>
+                        <div class="collection_info text-center">
+							
+								<h6><input style="width:100%" type="text" name="name" value="<%= profile.name %>"/></h6>
+								<p class="w-text mr-5p"><input style="width:100%" type="text" name="title" value="<%= profile.title %>"/></p>
+								<p class="mt-15"><textarea style="width:100%" name="description"><%= profile.description %></textarea></p>
+								<div class="search-widget-area mt-15">
+									<form action="#" method="get" onsubmit="copyAddress()">
+										<input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
+										<button class="btn"><i class="fa fa-copy"></i></button>
+									</form>
+								</div>
+								<ul class="social-links mt-15">
+								  <li>
+								  <span class="fa fa-facebook-f"></span>
+								  <input type="text" style="width:100%" name="facebook" value="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-twitter"></span>
+								  <input type="text" style="width:100%" name="twitter" value="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-linkedin"></span>
+								  <input type="text" style="width:100%" name="linkedin" value="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-instagram"></span>
+								  <input type="text" style="width:100%" name="instagram" value="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>"/>
+								  </li>
+							   </ul>
+							   
+								<a href="#" class="more-btn mt-15">Edit</a>
+							 <script>
+							function copyAddress(){
+								//TODO: Copy the address to clipboard
+								var fullAddress = "<%= profile.longAddr %>";
+								return false;
+							}
+							</script>
+                        </div>
+                        
+                    </div>
+					<!--</form>-->
+					<% }else{ %>
+                   <div class="service_single_content collection-item">
+                        <!-- Icon -->
+                        <div class="collection_icon">
+                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+                        </div>
+                        <span class="aut-info">
+                            <img src="/img/authors/2.png" width="50" alt="">
+                        </span>
+                        <div class="collection_info text-center">
+							
+							
+							
+                            <h6><%= profile.name %></h6>
+                            <p class="w-text mr-5p"><%= profile.title %></p>
+                            <p class="mt-15"><%= profile.description %></p>
+
+                            <div class="search-widget-area mt-15">
+                                <form action="#" method="get" onsubmit="copyAddress()">
+                                    <input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
+                                    <button class="btn"><i class="fa fa-copy"></i></button>
+                                </form>
+                            </div>
+							
+                            <ul class="social-links mt-15">
+                              <li><a href="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>">
+							  <span class="fa fa-facebook-f"></span></a></li>
+                              <li><a href="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>">
+							  <span class="fa fa-twitter"></span></a></li>
+                              <li><a href="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>">
+							  <span class="fa fa-linkedin"></span></a></li>
+                              <li><a href="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>">
+							  <span class="fa fa-instagram"></span></a></li>
+                           </ul>
+
+                            <a href="#" class="more-btn mt-15">Follow</a>
+							
+							<script>
+							function copyAddress(){
+								//TODO: Copy the address to clipboard
+								var fullAddress = "<%= profile.longAddr %>";
+								return false;
+							}
+							</script>
+                        </div>
+                        
+                    </div>
+					<% } %>
+                        
+                </div>
+				<div class="col-12 col-md-9">
+				
+				
+				<% }else{ %>
+                <div class="col-12">
+				
+				<% } %>
+                    <div class="creator-sec dd-bg">
+                        <div class="who-we-contant">
+                            <div class="dream-dots text-left fadeInUp" data-wow-delay="0.2s">
+                                <span class="gradient-text ">Create New Item</span>
+                            </div>
+                            <h4 class="fadeInUp" data-wow-delay="0.3s">Create Item</h4>
+                        </div>
+                        <div class="contact_form">
+                            <form action="#" method="post" id="main_contact_form" novalidate>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div id="success_fail_info"></div>
+                                    </div>
+
+                                    <div class="col-12 col-md-12">
+                                        <p class="w-text">Upload Item File</p>
+                                        <div class="group-file">
+                                            <p class="g-text">PNG, GIF, WEBP, MP4 or MP3. Max 20mb</p>
+                                            <div class="new_Btn more-btn">Upload File</div><br>
+                                            <input type="file" name="upload" id="upload-btn" required>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        <div class="group">
+                                            <input type="text" name="name" id="name" required>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Item name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        <div class="mb-15">
+                                            <p>Choose item Category</p>
+                                            <div class="filers-list ">
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f1.png" alt="">Art
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f5.png" alt="">Virtual Worlds
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f2.png" alt="">Purchases
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f3.png" alt="">NFT Gifts
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f4.png" alt="">Collectibles
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f6.png" alt="">Gifts
+                                                </a>
+                                                <a href="#" class="filter-item">
+                                                    <img src="img/icons/f7.png" alt="">Trading Cards
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="group">
+                                            <textarea name="Description" id="Description" required></textarea>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Item Description</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        <div class="group">
+                                            <input type="text" name="Price" id="Price" required>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Item Price in ETH</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="group">
+                                            <input type="text" name="Royalties" id="Royalties" required>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Royalties</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="group">
+                                            <input type="text" name="Size" id="Size" required>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Size</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="group">
+                                            <input type="text" name="copies" id="copies" required>
+                                            <span class="highlight"></span>
+                                            <span class="bar"></span>
+                                            <label>Number of copies</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 text-center">
+                                        <button type="submit" class="more-btn mb-15">Create Item</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Blog Area End ##### -->

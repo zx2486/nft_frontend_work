@@ -1,0 +1,106 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %><img src="img/art-work/fire.png" width="20" alt=""></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+
+    <section class="features section-padding-100 ">
+
+        <div class="container">
+            <div class="section-heading text-center">
+                
+            </div>
+            <div class="row align-items-center">
+				<% items.forEach(function(onecat) { %>
+                <div class="col-lg-3 col-sm-6 col-xs-12">
+                    <div class="pricing-item ">
+                        <div class="wraper">
+                            <a href="/item/<%= onecat.itemid %>"><img src="<%= onecat.img %>" alt=""></a>
+                            <a href="/item/<%= onecat.itemid %>"><h4></h4></a>
+                            <div class="owner-info">
+                                <img src="<%= onecat.authorimg %>" width="40" alt="">
+                                <a href="/profile/<%= onecat.authorid %>"><h3><%= onecat.author %></h3></a>
+                            </div>
+                             <span>
+							<span class="g-text">Price</span> 
+							<% if(onecat.price){ %>
+							<%= onecat.price %> ETH
+							<% } %>
+							<!--<span class="g-text ml-15">1 of 10</span>-->
+							</span>
+                            <!-- Countdown  -->
+                            <div class="count-down titled circled text-center">
+                                <div class="kcjmXv">
+								<div class="timer-head-block"></div>
+								<div class="timer-body-block">
+								<div class="table-cell day"><div class="tab-val">0</div><div class="tab-metr tab-unit">days</div></div>
+								<div class="table-cell hour"><div class="tab-val">0</div><div class="tab-metr tab-unit">hours</div></div>
+								<div class="table-cell minute"><div class="tab-val">0</div><div class="tab-metr tab-unit">minutes</div></div>
+								<div class="table-cell second"><div class="tab-val">0</div><div class="tab-metr tab-unit">seconds</div></div>
+								</div><div class="timer-foot-block"></div>
+								<input type="hidden" value="<%= onecat.endbidtime %>"/>
+								</div>
+                            </div>
+
+                            <div class="admire">
+                                <a class="btn more-btn width-100" href="/item/<%= onecat.itemid %>">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+				<% }); %>
+				<script>
+				// Update the count down every 1 second
+				var x = setInterval(function() {
+					try {
+					  $(".kcjmXv").each(function(index){
+						//var biddingDate = $(this).find("input:last")[0].value; 
+						//var countDownDate = new Date(biddingDate).getTime();
+						var countDownDate = parseFloat($(this).find("input:last")[0].value);
+						var now = new Date().getTime();
+						var distance = countDownDate - now;
+						//console.log(biddingDate,countDownDate,now,distance);
+						
+						if(distance > 0){
+							var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+						  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+						  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+						  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+						  var elements = $(this).find(".table-cell .tab-val");
+							elements[0].innerHTML = days;
+							elements[1].innerHTML = hours;
+							elements[2].innerHTML = minutes;
+							elements[3].innerHTML = seconds;
+						}
+						
+					  });
+					} catch (error) {
+					  
+					}
+				}, 1000);
+				</script>
+                
+                
+                
+                <!--<div class="col-12 col-lg-12 text-center">
+                    <a class="btn more-btn fadeInUp" data-wow-delay="0.6s" href="discover-3.html">Load More</a>
+                </div>-->
+            </div>
+        </div>
+    </section>

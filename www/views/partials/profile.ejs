@@ -1,0 +1,266 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+
+
+	<!-- ##### Area Start ##### -->
+    <section class="blog-area section-padding-100">
+        <div class="container">
+
+            <div class="row">
+				<% if(typeof profile != "undefined"){ %>
+                <div class="col-12 col-lg-3">
+					<% if(typeof editID != "undefined"){ %>
+					<!--<form method="post" target="/editprofile" enctype="multipart/form-data">-->
+					<div class="service_single_content collection-item">
+                        <!-- Icon -->
+                        <div class="collection_icon">
+                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+								<label class="btn" for="my-file-selector">
+									<input id="my-file-selector" name="profile-image" type="file" class="d-none">
+									Change Image
+								</label>
+							</img>
+							
+                        </div>
+						
+                        <span class="aut-info">
+                            <img src="/img/authors/2.png" width="50" alt="">
+							<label class="btn" for="my-file-selector2">
+								<input id="my-file-selector2" name="profile-image2" type="file" class="d-none">
+								Change<br>Profile
+							</label>
+                        </span>
+						<style>
+						.collection_icon .btn {
+							position: absolute;
+							top: 8%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							-ms-transform: translate(-50%, -50%);
+							background-color: transparent;
+							color: white;
+							font-size: small;
+							border: none;
+							cursor: pointer;
+							border-radius: 5px;
+							opacity: 0;
+							line-height: 500%;
+							width: 80%;
+							height: 13%;
+							text-align: center;
+						}
+						.collection_icon .btn:hover {
+							background-color: black;
+							opacity: 0.5;
+						}
+						.aut-info .btn {
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							-ms-transform: translate(-50%, -50%);
+							background-color: transparent;
+							color: white;
+							font-size: smaller;
+							border: none;
+							cursor: pointer;
+							border-radius: 5px;
+							opacity: 0;
+						}
+						.aut-info .btn:hover {
+							background-color: black;
+							opacity: 1;
+						}
+						</style>
+                        <div class="collection_info text-center">
+							
+								<h6><input style="width:100%" type="text" name="name" value="<%= profile.name %>"/></h6>
+								<p class="w-text mr-5p"><input style="width:100%" type="text" name="title" value="<%= profile.title %>"/></p>
+								<p class="mt-15"><textarea style="width:100%" name="description"><%= profile.description %></textarea></p>
+								<div class="search-widget-area mt-15">
+									<form action="#" method="get" onsubmit="copyAddress()">
+										<input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
+										<button class="btn"><i class="fa fa-copy"></i></button>
+									</form>
+								</div>
+								<ul class="social-links mt-15">
+								  <li>
+								  <span class="fa fa-facebook-f"></span>
+								  <input type="text" style="width:100%" name="facebook" value="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-twitter"></span>
+								  <input type="text" style="width:100%" name="twitter" value="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-linkedin"></span>
+								  <input type="text" style="width:100%" name="linkedin" value="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>"/>
+								  </li>
+								  <li>
+								  <span class="fa fa-instagram"></span>
+								  <input type="text" style="width:100%" name="instagram" value="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>"/>
+								  </li>
+							   </ul>
+							   
+								<a href="#" class="more-btn mt-15">Edit</a>
+							 <script>
+							function copyAddress(){
+								//TODO: Copy the address to clipboard
+								var fullAddress = "<%= profile.longAddr %>";
+								return false;
+							}
+							</script>
+                        </div>
+                        
+                    </div>
+					<!--</form>-->
+					<% }else{ %>
+                   <div class="service_single_content collection-item">
+                        <!-- Icon -->
+                        <div class="collection_icon">
+                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+                        </div>
+                        <span class="aut-info">
+                            <img src="/img/authors/2.png" width="50" alt="">
+                        </span>
+                        <div class="collection_info text-center">
+							
+							
+							
+                            <h6><%= profile.name %></h6>
+                            <p class="w-text mr-5p"><%= profile.title %></p>
+                            <p class="mt-15"><%= profile.description %></p>
+
+                            <div class="search-widget-area mt-15">
+                                <form action="#" method="get" onsubmit="copyAddress()">
+                                    <input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
+                                    <button class="btn"><i class="fa fa-copy"></i></button>
+                                </form>
+                            </div>
+							
+                            <ul class="social-links mt-15">
+                              <li><a href="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>">
+							  <span class="fa fa-facebook-f"></span></a></li>
+                              <li><a href="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>">
+							  <span class="fa fa-twitter"></span></a></li>
+                              <li><a href="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>">
+							  <span class="fa fa-linkedin"></span></a></li>
+                              <li><a href="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>">
+							  <span class="fa fa-instagram"></span></a></li>
+                           </ul>
+
+                            <a href="#" class="more-btn mt-15">Follow</a>
+							
+							<script>
+							function copyAddress(){
+								//TODO: Copy the address to clipboard
+								var fullAddress = "<%= profile.longAddr %>";
+								return false;
+							}
+							</script>
+                        </div>
+                        
+                    </div>
+					<% } %>
+                        
+                </div>
+				<div class="col-12 col-md-9">
+				
+				
+				<% }else{ %>
+                <div class="col-12">
+					<div class="section-heading text-center">
+                        <h2 class="wow fadeInUp" data-wow-delay="0.3s">Recent Listed Works</h2>
+                        <p class="wow fadeInUp" data-wow-delay="0.4s"><a href="/create-item" class="btn more-btn">Create NFT</a></p>
+                    </div>
+				
+				<% } %>
+                    <!-- Projects Menu -->
+                    <div class="dream-projects-menu mb-50">
+                        <div class="text-center portfolio-menu">
+						<% category.forEach(function(onecat) { %>
+							<button class="btn" data-filter="<%= onecat.tag %>"><%= onecat.name %></button>
+						<% }); %>
+						 </div>
+                    </div>
+                    <div class="row">
+                        
+                        <div class="container">
+                            <div class="row dream-portfolio">
+							
+							<% items.forEach(function(onecat) { %>
+
+							<!-- Single gallery Item -->
+							<% if(typeof profile != "undefined"){ %>
+							<div class="col-12 col-sm-6 col-lg-4 single_gallery_item <%= onecat.tag %>">
+							<% }else{ %>
+							<div class="col-12 col-sm-6 col-lg-3 single_gallery_item <%= onecat.tag %>">
+							<% } %>
+								<div class="pricing-item ">
+									<div class="wraper">
+										<a href="/item/<%= onecat.itemid %>"><img src="/<%= onecat.img %>" alt=""></a>
+										<a href="/item/<%= onecat.itemid %>"><h4><%= onecat.title %></h4></a>
+										<% if(typeof profile != "undefined"){ %>
+										<div class="owner-info">
+											<img src="/<%= onecat.authorimg %>" width="40" alt="">
+											<a href="/profile/<%= onecat.authorid %>"><h3><%= onecat.author %></h3></a>
+										</div>
+										<% } %>
+										<span>
+										<span class="g-text">Price</span> 
+										<% if(onecat.price){ %>
+										<%= onecat.price %> ETH
+										<% } %>
+										<!--<span class="g-text ml-15">1 of 10</span>-->
+										</span>
+										<div class="pricing">Highest Bid :  
+										<% if(onecat.bid){ %>
+										<span class="ml-15"><%= onecat.bid %> ETH</span>
+										<% }else{ %>
+										<span class="ml-15"></span>
+										<% } %>
+										</div>					
+										<div class="admire">
+											<div class="adm"><i class="fa fa-clock-o"></i><%= onecat.updatetime %></div>
+											<div class="adm"><i class="fa fa-heart-o"></i><%= onecat.likes %> Like</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<% }); %>								
+								
+							</div>
+
+                            <!--<div class="col-12 col-lg-12 text-center">
+                                <a class="btn more-btn fadeInUp" data-wow-delay="0.6s" href="discover.html">Load More</a>
+                            </div>
+							-->
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </section>
+    <!-- ##### Blog Area End ##### -->

@@ -1,0 +1,103 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+
+    <!-- ##### Our Recent Work Area Start ##### -->
+    <section class="our_recent_work_area section-padding-100 clearfix">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-heading text-center">
+                        <div class="dream-dots justify-content-center fadeInUp" data-wow-delay="0.2s">
+                             <span><%= subtitle %></span>
+                        </div>
+                        <!--<h2 class="wow fadeInUp" data-wow-delay="0.3s">Recent Listed Works</h2>
+                        <p class="wow fadeInUp" data-wow-delay="0.4s">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis accumsan nisi Ut ut felis congue nisl hendrerit commodo.</p>
+						-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Menu -->
+        <div class="dream-projects-menu mb-50 wow fadeInUp" data-wow-delay="0.3s">
+            <div class="text-center portfolio-menu">
+				<% category.forEach(function(onecat) { %>
+					<button class="btn" data-filter="<%= onecat.tag %>"><%= onecat.name %></button>
+				<% }); %>
+                <!--<button class="btn" data-filter=".branding">Branding</button>
+                <button class="btn" data-filter=".design">Design</button>
+                <button class="btn" data-filter=".development">Development</button>
+				-->
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row dream-portfolio">
+				
+				<% items.forEach(function(onecat) { %>
+
+                <!-- Single gallery Item -->
+                <div class="col-12 col-sm-6 col-lg-3 single_gallery_item <%= onecat.tag %> wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="pricing-item ">
+                        <div class="wraper">
+                            <a href="/item/<%= onecat.itemid %>"><img src="<%= onecat.img %>" alt=""></a>
+                            <a href="/item/<%= onecat.itemid %>"><h4><%= onecat.title %></h4></a>
+                            <div class="owner-info">
+                                <img src="<%= onecat.authorimg %>" width="40" alt="">
+                                <a href="/profile/<%= onecat.authorid %>"><h3><%= onecat.author %></h3></a>
+                            </div>
+                            <span>
+							<span class="g-text">Price</span> 
+							<% if(onecat.price){ %>
+							<%= onecat.price %> ETH
+							<% } %>
+							<!--<span class="g-text ml-15">1 of 10</span>-->
+							</span>
+							<div class="pricing">Highest Bid :  
+							<% if(onecat.bid){ %>
+							<span class="ml-15"><%= onecat.bid %> ETH</span>
+							<% }else{ %>
+							<span class="ml-15"></span>
+							<% } %>
+							</div>					
+                            <div class="admire">
+                                <div class="adm"><i class="fa fa-clock-o"></i><%= onecat.updatetime %></div>
+                                <div class="adm"><i class="fa fa-heart-o"></i><%= onecat.likes %> Like</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				
+				<% }); %>
+
+            </div>
+        </div>
+
+        <!--<div class="container text-center wow fadeInUp" data-wow-delay="1s">
+            <div class="row">
+                <div class="col-12">
+                    <a href="discover-3.html" class="btn more-btn">Load More</a>
+                </div>
+            </div>
+        </div>-->
+    </section>
+    <!-- ##### Our Recent Work Area End ##### -->

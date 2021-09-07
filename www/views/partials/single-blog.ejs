@@ -1,0 +1,166 @@
+<!-- ##### Welcome Area Start ##### -->
+    <div class="breadcumb-area clearfix">
+        
+        <!-- breadcumb content -->
+        <div class="breadcumb-content">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb" class="breadcumb--con text-center">
+                            <h2 class="title wow fadeInUp" data-wow-delay="0.2s"><%= pagetitle %></h2>
+                            <ol class="breadcrumb justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+								<li class="breadcrumb-item"><a href="#">Blog</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><%= pagetitle %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Welcome Area End ##### -->
+	<!-- ##### Blog Area Start ##### -->
+    <section class="blog-area section-padding-100">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-12 col-md-9">
+					<div class="single-blog-area wow fadeInUp" data-wow-delay="0.2s">
+                        <!-- Post Thumbnail -->
+                        <div class="blog_thumbnail">
+                            <img src="/<%= blog.img %>" alt="">
+                        </div>
+                        <!-- Post Content -->
+                        <div class="blog-content">
+                            
+                            <div class="post-meta">
+                                <p>By <a href="/profile/<%= blog.authorid %>" class="post-author"><%= blog.author %></a> 
+								<a href="#"><%= blog.endbidtime %></a> <a href="#" class="post-comments"><%= blog.comments %> comments</a></p>
+                            </div>
+                            <h4 class="post-title"><%= blog.title %></h4>
+                            <%- blog.description %>
+                        </div>
+                    </div>
+				
+					<!-- Comment Area Start -->
+                    <div class="comment_area clearfix mt-70 wow fadeInUp" data-wow-delay="0.4s">
+                        <h5 class="title">Comments</h5>
+
+                        <ol>
+						<% comments.forEach(function(onecat) { %>
+						
+							<!-- Single Comment Area -->
+                            <li class="single_comment_area">
+                                <!-- Comment Content -->
+                                <div class="comment-content d-flex">
+                                    <!-- Comment Author -->
+                                    <div class="comment-author">
+                                        <img src="/<%= onecat.authorimg %>" alt="author">
+                                    </div>
+                                    <!-- Comment Meta -->
+                                    <div class="comment-meta">
+                                        <p><%= onecat.description %></p>
+                                        <a href="#" class="post-date"><%= onecat.endbidtime %></a>
+                                        <p><a href="/profile/<%= onecat.authorid %>" class="post-author"><%= onecat.author %></a></p>
+                                        <a href="#" class="comment-reply">Reply</a>
+                                    </div>
+                                </div>
+                                <ol class="children">
+									<% onecat.children.forEach(function(smallKid) { %>
+                                    <li class="single_comment_area">
+                                        <!-- Comment Content -->
+                                        <div class="comment-content d-flex">
+                                            <!-- Comment Author -->
+                                            <div class="comment-author">
+                                                <img src="/<%= smallKid.authorimg %>" alt="author">
+                                            </div>
+                                            <!-- Comment Meta -->
+                                            <div class="comment-meta">
+												<p><%= smallKid.description %></p>
+												<a href="#" class="post-date"><%= smallKid.endbidtime %></a>
+												<p><a href="/profile/<%= smallKid.authorid %>" class="post-author"><%= smallKid.author %></a></p>
+												<a href="#" class="comment-reply">Reply</a>
+											</div>
+                                        </div>
+                                    </li>
+									<% }); %>
+                                </ol>
+                            </li>
+						
+						<% }); %>
+				
+						</ol>
+                    </div>
+
+                    <div class="post-a-comment-area mt-100 wow fadeInUp" data-wow-delay="0.6s">
+                        <h5>Leave a reply</h5>
+                        <!-- Reply Form -->
+                        <form action="#" method="post">
+                            <div class="row">
+                                <div class="col-12" style="margin-top: 2rem;">
+                                    <div class="group">
+                                        <textarea name="message" id="message" required></textarea>
+                                        <span class="bar"></span>
+                                        <label>Comment</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn more-btn">Reply</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+				
+			
+				<div class="col-12 col-md-3">
+                    <div class="sidebar-area">
+
+                        <!-- Search Widget -->
+                        <div class="search-widget-area mb-50 wow fadeInUp" data-wow-delay="0.2s">
+                            <form action="#" method="post">
+                                <input type="search" name="search" id="search" placeholder="Search...">
+                                <button type="submit" class="btn"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
+
+                        <!-- Don't Miss Widget -->
+                        <div class="donnot-miss-widget mb-50">
+                            <div class="widget-title wow fadeInUp" data-wow-delay="0.3s">
+                                <h5>Don't miss</h5>
+                            </div>
+							<% features.forEach(function(onecat) { %>
+							<!-- Single Don't Miss Post -->
+                            <div class="single-dont-miss-post mb-30 wow fadeInUp" data-wow-delay="0.4s">
+                                <div class="dont-miss-post-thumb">
+                                    <img src="/<%= onecat.img %>" alt="">
+                                </div>
+                                <div class="dont-miss-post-content">
+                                    <a href="/blog/<%= onecat.itemid %>"><%= onecat.title %></a>
+                                    <span><%= onecat.endbidtime %></span>
+                                </div>
+                            </div>
+							
+							<% }) %>
+						</div>
+						<!-- Subscribe Widget -->
+                        <div class="subscribe-widget mb-50">
+                            <div class="widget-title wow fadeInUp" data-wow-delay="0.9s">
+                                <h5>subscribe</h5>
+                            </div>
+                            <div class="subscribe-form wow fadeInUp" data-wow-delay="1s">
+                                <form action="#">
+                                    <input type="email" name="email" id="subs_email" placeholder="Your Email">
+                                    <button type="submit" class="btn">subscribe</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+			
+        </div>
+    </section>
+    <!-- ##### Blog Area End ##### -->
