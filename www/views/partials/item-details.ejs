@@ -90,11 +90,11 @@
 									var needPay = Math.floor(parseFloat(onecat.price)*100 * parseFloat(ETH_price))/100;
 									%><%= needPay %></p>
                                 <p><i class="fa fa-clock-o mr-5p"></i><%
-								var date = new Date(parseInt(onecat.dt_create_time));
+								var date22 = new Date(parseInt(onecat.dt_create_time));
 								// Hours part from the timestamp
-								var hours = date.getHours();
+								var hours = date22.getHours();
 								// Minutes part from the timestamp
-								var minutes = "0" + date.getMinutes();
+								var minutes = "0" + date22.getMinutes();
 								var formattedTime = hours + ':' + minutes.substr(-2);
 								%><%= formattedTime %></p>
                             </div>

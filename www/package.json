@@ -10,6 +10,8 @@
   "dependencies": {
     "ejs": "^3.1.6",
     "express": "^4.16.1",
+    "get-eth-price": "^1.0.0",
+    "mysql": "^2.18.1",
     "trumpet": "^1.7.2"
   }
 }

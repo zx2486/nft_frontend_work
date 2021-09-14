@@ -22,8 +22,13 @@ requestAgentOptions = {
 , rejectUnauthorized: false
 };
 
+//Database connection
+var mysqlFront = require("./database");
+
 //requestAgent = new https.Agent(requestAgentOptions);
 
+//Get realtime ETH price from CryptoCompare
+const {getEthPriceNow}= require('get-eth-price');
 
 const pathjs = __dirname + '/views/js';
 const pathcss = __dirname + '/views/css';
@@ -51,47 +56,30 @@ router.get('/', function(req,res){
 	});
 });
 
-router.get('/category', function(req,res){
-	var category = [
-		{ tag: '*', name: "All"},
-		{ tag: '.branding', name: "Branding"},
-		{ tag: '.design', name: "Design"},
-		{ tag: '.development', name: "Development"}
-	];
-	var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 2, tag: "design", title: "Resonate Sanctuary II", img:"img/art-work/2.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 3, tag: "development", title: "Analogue refraction #3", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		updatetime: "2.5 Hours Ago",likes: "211"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		updatetime: "1.25 Hour Ago",likes: "121"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.5 Hour Ago",likes: "322"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];
+router.get('/category', async function(req,res){
+	var categoryDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_category' );
+	//console.log(categoryDB);
+	if(!categoryDB) categoryDB = [];
+	//Add the dot in class
+	for ( const i in categoryDB ) {
+		if(categoryDB[ i ] && categoryDB[ i ].tag) 
+			categoryDB[ i ].tag = '.'+categoryDB[ i ].tag;
+	}
+	var category = [ { tag: '*', name: "All"}, ];
+	for ( const i in categoryDB ) {
+		category.push(categoryDB[ i ]);
+	}
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid' );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
 	var subtitle = "NFT divided by Category";
 	var pagetitle = "Category NFT";
 	res.render('pages/discover-2', {
@@ -102,8 +90,19 @@ router.get('/category', function(req,res){
 	});
 });
 
-router.get('/feature', function(req,res){
-	var items = [
+router.get('/feature', async function(req,res){
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE a.tag LIKE "%feature%"' );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+	/*var items = [
 		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
 		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
 		updatetime: "6 Hours Ago",likes: "134"
@@ -116,7 +115,7 @@ router.get('/feature', function(req,res){
 		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
 		updatetime: "0.25 Hour Ago",likes: "26"
 		},
-	];
+	];*/
 	var pagetitle = "Feature NFT";
 	res.render('pages/discover-2', {
 		pagetitle: pagetitle,
@@ -126,7 +125,7 @@ router.get('/feature', function(req,res){
 	});
 });
 
-router.get('/fanclub', function(req,res){
+/*router.get('/fanclub', function(req,res){
 	var pagetitle = "Fan Club";
 	var topfan = [
 		{rank: "01",author: "Smith Wright",authorimg: "img/authors/1.png",authorid: 1,authorspending:3.3},
@@ -167,16 +166,27 @@ router.get('/fanclub', function(req,res){
 		topfan3:topfan3,
 		topstars:topstars,
 	});
-});
+});*/
 
-router.get('/explore', function(req,res){
+router.get('/explore', async function(req,res){
 	/*var category = [
 		{ tag: '*', name: "All"},
 		{ tag: 'branding', name: "Branding"},
 		{ tag: 'design', name: "Design"},
 		{ tag: 'development', name: "Development"}
 	];*/
-	var items = [
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid' );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+	/*var items = [
 		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
 		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
 		updatetime: "6 Hours Ago",likes: "134"
@@ -209,7 +219,7 @@ router.get('/explore', function(req,res){
 		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
 		updatetime: "0.25 Hour Ago",likes: "26"
 		},
-	];
+	];*/
 	var subtitle = "NFT From Our Stars";
 	var pagetitle = "Explore";
 	res.render('pages/discover-2', {
@@ -220,8 +230,20 @@ router.get('/explore', function(req,res){
 	});
 });
 
-router.get('/auction', function(req,res){  
+router.get('/auction', async function(req,res){  
 	var pagetitle = "Live Auctions";
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE endbidtime IS NOT NULL' );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+	/*
 	var items = [
 		{ itemid: 1, tag: "branding", title: "After Snow: Attraction", img:"img/art-work/9.png",
 		author: "@Johan Done",authorimg: "img/authors/1.png",authorid: 1,price:0.081,
@@ -256,16 +278,41 @@ router.get('/auction', function(req,res){
 		endbidtime: "1630473063000"
 		},
 	];
+	*/
 	res.render('pages/auctions', {
 		pagetitle: pagetitle,
 		items: items,
 	});
 });
 
-router.get('/item/:itemid', function(req,res){
+router.get('/item/:itemid', async function(req,res){
   //req.params.itemid
 	var pagetitle = "Item Details";
-	var ETH_price = "1571.34";
+	var ETHpriceArray = await getEthPriceNow();
+	ETHpriceArray = Object.values(ETHpriceArray);
+	ETHpriceArray = ETHpriceArray[0];
+	var ETH_price = (ETHpriceArray && ETHpriceArray.ETH && ETHpriceArray.ETH.USD)? ETHpriceArray.ETH.USD : 0;
+	//var ETH_price = "1571.34";
+	var itemid = req.params.itemid;
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE a.itemid = '+itemid );
+	//var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_item WHERE itemid = '+itemid );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+		itemDB[i].tag = (itemDB[i].tag)? itemDB[i].tag.split(" ") : [];
+	}
+	var focusItem = (itemDB && itemDB[0])? itemDB[0] : { };
+	
+	focusItem.collection = " ";
+	//Get bidding prices
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_bids a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE a.itemid = '+itemid+' ORDER BY ID DESC' );
+	focusItem.highest_bid = (itemDB && itemDB[0])? itemDB[0]: {};
+	focusItem.bids = (itemDB)? itemDB: [ ];
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_history a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE a.itemid = '+itemid+' ORDER BY ID DESC' );
+	focusItem.history = (itemDB)? itemDB: [ ];
+	/*
 	var focusItem = {
 		tag: ["branding","Crypto Art"],
 		title: "Floyd Mayweather Jr.",
@@ -291,8 +338,20 @@ router.get('/item/:itemid', function(req,res){
 		],
 		endbidtime: "1630473063000",
 	}
-	
-	var topfan = [
+	*/
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author ORDER BY authorspending DESC LIMIT 0,12' );
+	var topfan = [ ];
+	var topfan2 = [ ];
+	var topfan3 = [ ];
+	for ( const i in itemDB ) {
+		if(!itemDB[ i ]) continue;
+		var singleTopFan = itemDB[ i ];
+		singleTopFan.rank = (i<10)? "0"+i : ""+i;
+		if(topfan.length <4) topfan.push(singleTopFan);
+		else if(topfan2.length <4) topfan2.push(singleTopFan);
+		else if(topfan3.length <4) topfan3.push(singleTopFan);
+	}
+	/*var topfan = [
 		{rank: "01",author: "Smith Wright",authorimg: "img/authors/1.png",authorid: 1,authorspending:3.3},
 		{rank: "02",author: "Amillia Nnor",authorimg: "img/authors/2.png",authorid: 2,authorspending:3.0},
 		{rank: "03",author: "Naretor-Nole",authorimg: "img/authors/3.png",authorid: 3,authorspending:2.9},
@@ -309,8 +368,19 @@ router.get('/item/:itemid', function(req,res){
 		{rank: "10",author: "Amillia Nnor",authorimg: "img/authors/2.png",authorid: 2,authorspending:3.0},
 		{rank: "11",author: "Naretor-Nole",authorimg: "img/authors/3.png",authorid: 3,authorspending:2.9},
 		{rank: "12",author: "Johan Donem",authorimg: "img/authors/4.png",authorid: 4,authorspending:2.5},
-	];
-	var items = [
+	];*/
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid ORDER BY likes DESC LIMIT 0,4' );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+	/*var items = [
 		{ itemid: 1, tag: "branding", title: "After Snow: Attraction", img:"img/art-work/9.png",
 		author: "@Johan Done",authorimg: "img/authors/1.png",authorid: 1,price:0.081,
 		endbidtime: "1630473063000"
@@ -343,7 +413,7 @@ router.get('/item/:itemid', function(req,res){
 		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
 		endbidtime: "1630473063000"
 		},
-	];
+	];*/
 	res.render('pages/item-detail', {
 		pagetitle: pagetitle,
 		topfan:topfan,
