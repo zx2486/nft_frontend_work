@@ -29,3 +29,13 @@ module.exports.runQuery = (query) =>{
         });
     });
 };
+module.exports.runInsertQuery = (query,items) =>{
+    return new Promise((resolve, reject)=>{
+        mysqlFront.query(query,items,  (error, elements)=>{
+            if(error){
+                return reject(error);
+            }
+            return resolve(elements);
+        });
+    });
+};

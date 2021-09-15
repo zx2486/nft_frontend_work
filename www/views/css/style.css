@@ -1005,7 +1005,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 .hero-section{
     position: relative;
     min-height: 700px;
-    background: url('../img/bg-img/header2.jpg') no-repeat bottom center;
+    /*background: url('../img/bg-img/header2.jpg') no-repeat bottom center;*/
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -1014,7 +1014,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 .hero-section.app{
     position: relative;
     min-height: 730px;
-    background: url('../img/bg-img/header-app.png') no-repeat top center;
+    /*background: url('../img/bg-img/header-app.png') no-repeat top center;*/
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -1023,7 +1023,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 .hero-section.de-3{
     position: relative;
     min-height: 730px;
-    background: url(../img/bg-img/bg-3.png) no-repeat top center;
+    /*background: url(../img/bg-img/bg-3.png) no-repeat top center;*/
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -1040,14 +1040,14 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     left: 0px;
     right: 0px;
     bottom: -3px;
-    background: url(../img/svg/curve.svg) no-repeat bottom;
+    /*background: url(../img/svg/curve.svg) no-repeat bottom;*/
     z-index: 0
 }
 .hero-section.fullwidth-header{
     padding-top: 100px;
     padding-bottom: 365px;
     background-color: #446beb;
-    background-image: url(../img/svg/fullwidth-header.svg);
+    /*background-image: url(../img/svg/fullwidth-header.svg);*/
     background-position: 58% 100%;
     background-size: 1200px;
     background-repeat: no-repeat;
@@ -1177,18 +1177,19 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     background: linear-gradient(to right, rgba(72, 52, 212, 0.95), rgba(52, 31, 151, 0.75));
 }
 .hero-content.with-after{
-    background: url('../img/svg/bg_hero.svg') no-repeat center right;
+    /*background: url('../img/svg/bg_hero.svg') no-repeat center right;*/
 }
 .hero-content.with-after-before{
-    background-image: url(../img/svg/bg_hero1.svg),url(../img/svg/bg_hero2.svg);
+    /*background-image: url(../img/svg/bg_hero1.svg),url(../img/svg/bg_hero2.svg);*/
     background-position: right top,left bottom;
     background-size: auto;
     background-repeat: no-repeat;
 }
 .hero-content.creative{
-    background: url('../img/bg-img/header3.png') no-repeat center right;
+    /*background: url('../img/bg-img/header3.png') no-repeat center right;*/
     background-size: cover
 }
+/*
 .hero-content.gaming{
     background: url('../img/bg-img/game-bg.png') no-repeat center center;
     background-size: cover
@@ -1211,6 +1212,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 .hero-content.trans{
     background: url('../img/bg-img/trans.png') no-repeat right top;
 }
+*/
 .hero-content.transparent{
     background: transparent;
 }
@@ -1341,7 +1343,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 }
 .main-ilustration-4{
     position: relative;
-    background: url(../img/svg/head-bg-1.svg) no-repeat center 65%;
+    /*background: url(../img/svg/head-bg-1.svg) no-repeat center 65%;*/
     height: 100vh;
     background-size: cover;
 }
@@ -1375,7 +1377,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     position: absolute;
     width: 150px;
     height: 150px;
-    background: url(../img/core-img/video-btn-bg.png) no-repeat center center;
+    /*background: url(../img/core-img/video-btn-bg.png) no-repeat center center;*/
     background-size: cover;
     top: 50%;
     left: 50%;
@@ -1385,13 +1387,13 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     background: #fff;
     color: #2ea9fd;
 }
-.bub-right{
+/*.bub-right{
     background: url('../img/svg/bg_hero.svg') no-repeat center right;
 }
 .bub-left{
     background: url('../img/svg/benefits-bg.svg') no-repeat center left;
 }
-
+*/
 @media (max-width: 992px){
     .header-ilustration-1{
         margin-top: 0
@@ -1404,7 +1406,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     }
 
 }
-
+/*
 .main-ilustration-6{
     position: relative;
     background: url(../img/core-img/about-1.png) no-repeat center 65%;
@@ -1424,6 +1426,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     background-size: 100%;
     z-index: 2
 }
+*/
 .dotted{
     position: relative;
 }
@@ -1437,13 +1440,13 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 }
 .main-ilustration-9{
     position: relative;
-    background: url(../img/core-img/travel.png) no-repeat center 65%;
+    /*background: url(../img/core-img/travel.png) no-repeat center 65%;*/
     height: 100vh;
     background-size: 100%;
 }
 .main-ilustration-10{
     position: relative;
-    background: url(../img/core-img/pizza-header.png) no-repeat center 65%;
+    /*background: url(../img/core-img/pizza-header.png) no-repeat center 65%;*/
     height: 100vh;
     background-size: 80%;
 }
@@ -1620,7 +1623,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     height: 150px;
     bottom: 30px;
     left: 15px;
-    background: url(../img/core-img/video-header-bg.png) no-repeat center center;
+    /*background: url(../img/core-img/video-header-bg.png) no-repeat center center;*/
 }
 @media (max-width: 992px){
     .character-features,
@@ -1750,7 +1753,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 }
 @media (max-width: 767px) {
   .fullscreen-bg {
-    background: url('video/video-frame.PNG') center center / cover no-repeat;
+    /*background: url('video/video-frame.PNG') center center / cover no-repeat;*/
   }
    .welcome_area.video .desc{
         max-width: 80%;
@@ -1813,12 +1816,12 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 }
 /* ##### About Us Area ##### */
 .double-bg{
-    background: url('../img/svg/section-bg.svg') no-repeat center left;
+    /*background: url('../img/svg/section-bg.svg') no-repeat center left;*/
     background-size: contain
 }
 .double-bg-1{
     position: relative;
-    background: url('../img/bg-img/section-bg.png') no-repeat top right;
+    /*background: url('../img/bg-img/section-bg.png') no-repeat top right;*/
     background-size: cover
 }
 .about-us-area {
@@ -1832,7 +1835,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
 }
 @media (min-width: 1200px){
     .about-bg{
-        background: url(../img/bg-img/about-bg.png) no-repeat right top;
+        /*background: url(../img/bg-img/about-bg.png) no-repeat right top;*/
         background-size: contain;
         position: absolute;
         width: 71%;
@@ -1925,7 +1928,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
     position: relative;
     z-index: 1;
     height: 427px;
-    background: url(../img/svg/ai-illustration.svg) no-repeat;
+    /*background: url(../img/svg/ai-illustration.svg) no-repeat;*/
     background-size: 137%;
     background-position: center center;
 }
@@ -2064,7 +2067,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
         right: -45px;
         width: 60px;
         height: 20px;
-        background: url(../img/svg/join-right.svg) center right/100% auto no-repeat;
+        /*background: url(../img/svg/join-right.svg) center right/100% auto no-repeat;*/
     }
     .has-arrow-left-lg:after{
         transform: rotate(180deg);
@@ -2080,7 +2083,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
         right: 44%;
         width: 21px;
         height: 55px;
-        background: url(../img/svg/join-bottom.svg) center  no-repeat;
+        /*background: url(../img/svg/join-bottom.svg) center  no-repeat;*/
     }
     .has-arrow-top-md:after{
        transform: rotate(180deg);
@@ -2095,7 +2098,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
         right: -45px;
         width: 60px;
         height: 20px;
-        background: url(../img/svg/join-right.svg) center  no-repeat;
+        /*background: url(../img/svg/join-right.svg) center  no-repeat;*/
     }
     .has-arrow-left-md:before{
         transform: rotate(180deg);
@@ -2113,7 +2116,7 @@ nav{-webkit-transition: padding-top .3s,padding-bottom .3s;
         left: 50%;
         width: 26px;
         height: 55px;
-        background: url(../img/svg/join-bottom.svg) center  no-repeat;
+        /*background: url(../img/svg/join-bottom.svg) center  no-repeat;*/
     }
 }
 .arrow-img{

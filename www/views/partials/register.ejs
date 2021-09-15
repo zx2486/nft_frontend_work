@@ -40,7 +40,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8">
                     <div class="contact_form">
-                        <form action="#" method="post" id="main_contact_form" novalidate>
+                        <form action="/register" method="post" id="main_contact_form" novalidate>
                             <div class="row">
                                 <div class="col-12">
                                     <div id="success_fail_info"></div>
@@ -63,17 +63,13 @@
                                 </div>
 								<div class="col-12 col-md-12">
                                     <div class="group wow fadeInUp" data-wow-delay="0.3s">
-                                        <input type="text" name="address" id="address" required
-										<% if(typeof address != undefined){ %>
-										value="<%= address %>"
-										<% } %>
-										>
+                                        <input type="text" name="address" id="address" required readonly>
                                         <span class="highlight"></span>
                                         <span class="bar"></span>
-                                        <label>Address</label>
+                                        <label></label>
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <!--<div class="col-12">
                                     <div class="group wow fadeInUp" data-wow-delay="0.4s">
                                         <input type="password" name="password" id="password" required>
                                         <span class="highlight"></span>
@@ -88,10 +84,53 @@
                                         <span class="bar"></span>
                                         <label>Confirm Password</label>
                                     </div>
-                                </div>
+                                </div>-->
+								<input type="hidden" id="signatureObject" name="signatureObject" value="">
                                 <div class="col-12 text-center wow fadeInUp" data-wow-delay="0.6s">
-                                    <button type="submit" class="more-btn">Sign Up</button>
+									<input type="checkbox" id="agreeTerms" name="agreeTerms" value="agreeTerms">
+									<label for="agreeTerms">Click to agree with our terms and conditions</label><br>
+                                    <button type="button" class="more-btn" onclick="onRegister()">Sign Up</button>
                                 </div>
+								<script>
+								function onRegister(){
+									if(!$("#email")[0].value || !$("#name")[0].value || !$("#address")[0].value 
+										|| !$("#agreeTerms")[0].checked){
+										alert("Please fill in the required information and agree with the terms and conditions");
+										return false;
+									}
+									if(!provider || !localStorage.getItem('myAccount')){
+										alert("Not connected with valid wallet");
+										return false;
+									}
+									const web3 = new Web3(provider);
+									var signatureObject = web3.eth.personal.sign(web3.utils.utf8ToHex("By signning up, you are agreed to our Terms & Conditions"), localStorage.getItem('myAccount'),"solon is handsome"+new Date().getTime())
+									.then(function(signatureObject){
+										if(signatureObject){
+											document.getElementById("signatureObject").value = signatureObject;
+											$.ajax({
+											   type: "POST",
+											   url: "/register",
+											   data: $("#main_contact_form").serialize(),
+											   success: function(data)
+											   {
+													if(!data || typeof data !== "object")){
+														alert("Registration failed:"+data);
+														return;
+													}else{
+														var insertID = data;
+														insertID = (insertID.result)? insertID.result : false;
+														if(insertID && insertID =="success")
+															alert("Registration completed.");
+														else alert("Registration failed");
+														location.reload();
+													}
+											   }
+											 });
+										}
+									});									
+									return false;
+								}
+								</script>
                             </div>
                         </form>
                     </div>

@@ -1,5 +1,11 @@
 const express = require('express');
 const app = express();
+
+//Accepting form data
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 const router = express.Router();
@@ -24,6 +30,9 @@ requestAgentOptions = {
 
 //Database connection
 var mysqlFront = require("./database");
+
+//web3 connection
+var web3 = require("./web3_server");
 
 //requestAgent = new https.Agent(requestAgentOptions);
 
@@ -102,20 +111,6 @@ router.get('/feature', async function(req,res){
 	for ( const i in itemDB ) {
 		items.push(itemDB[ i ]);
 	}
-	/*var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];*/
 	var pagetitle = "Feature NFT";
 	res.render('pages/discover-2', {
 		pagetitle: pagetitle,
@@ -169,12 +164,6 @@ router.get('/feature', async function(req,res){
 });*/
 
 router.get('/explore', async function(req,res){
-	/*var category = [
-		{ tag: '*', name: "All"},
-		{ tag: 'branding', name: "Branding"},
-		{ tag: 'design', name: "Design"},
-		{ tag: 'development', name: "Development"}
-	];*/
 	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid' );
 	if(!itemDB) itemDB = [];
 	for ( const i in itemDB ) {
@@ -186,40 +175,6 @@ router.get('/explore', async function(req,res){
 	for ( const i in itemDB ) {
 		items.push(itemDB[ i ]);
 	}
-	/*var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 2, tag: "design", title: "Resonate Sanctuary II", img:"img/art-work/2.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 3, tag: "development", title: "Analogue refraction #3", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		updatetime: "2.5 Hours Ago",likes: "211"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		updatetime: "1.25 Hour Ago",likes: "121"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.5 Hour Ago",likes: "322"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];*/
 	var subtitle = "NFT From Our Stars";
 	var pagetitle = "Explore";
 	res.render('pages/discover-2', {
@@ -243,42 +198,6 @@ router.get('/auction', async function(req,res){
 	for ( const i in itemDB ) {
 		items.push(itemDB[ i ]);
 	}
-	/*
-	var items = [
-		{ itemid: 1, tag: "branding", title: "After Snow: Attraction", img:"img/art-work/9.png",
-		author: "@Johan Done",authorimg: "img/authors/1.png",authorid: 1,price:0.081,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 2, tag: "design", title: "Mortimer Crypto Mystic", img:"img/art-work/2.png",
-		author: "@LarySmith-3",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 3, tag: "development", title: "People are the pillars", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-	];
-	*/
 	res.render('pages/auctions', {
 		pagetitle: pagetitle,
 		items: items,
@@ -312,33 +231,7 @@ router.get('/item/:itemid', async function(req,res){
 	focusItem.bids = (itemDB)? itemDB: [ ];
 	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_history a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE a.itemid = '+itemid+' ORDER BY ID DESC' );
 	focusItem.history = (itemDB)? itemDB: [ ];
-	/*
-	var focusItem = {
-		tag: ["branding","Crypto Art"],
-		title: "Floyd Mayweather Jr.",
-		price: "0.34",
-		img:"img/art-work/9.png",
-		size:"3000 x 3000",
-		dt_create_time:"04 April, 2021",
-		collection: "Cyberpunk City Art",
-		author: "LarySmith-30",authorimg: "img/authors/1.png",authorid: 1,
-		highest_bid: {
-			author: "Wadee-Nel",authorimg: "img/authors/1.png",authorid: 1,price: "0.34",dt_create_time:"1630453063000"
-		},
-		bids:[
-			{author: "Wadee-Nel",authorimg: "img/authors/1.png",authorid: 1,price: "0.212",dt_create_time:"1630453063000"},
-			{author: "Johan Donem",authorimg: "img/authors/1.png",authorid: 1,price: "0.211",dt_create_time:"1630373063000"},
-			{author: "Morgan Wright",authorimg: "img/authors/1.png",authorid: 1,price: "0.18",dt_create_time:"1630273063000"},
-			{author: "Amillia Nnor",authorimg: "img/authors/1.png",authorid: 1,price: "0.163",dt_create_time:"1630173063000"},
-		],
-		history:[
-			{author: "LarySmith-30",authorimg: "img/authors/1.png",authorid: 1,price: "0.12",dt_create_time:"1630073063000",action:"Transferred to"},
-			{author: "Amillia Nnor",authorimg: "img/authors/1.png",authorid: 1,price: "0.1",dt_create_time:"1630053063000",action:"Bidded by"},
-			{author: "LarySmith-30",authorimg: "img/authors/1.png",authorid: 1,price: "0",dt_create_time:"1630043063000",action:"Created by"},
-		],
-		endbidtime: "1630473063000",
-	}
-	*/
+	
 	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author ORDER BY authorspending DESC LIMIT 0,12' );
 	var topfan = [ ];
 	var topfan2 = [ ];
@@ -351,24 +244,7 @@ router.get('/item/:itemid', async function(req,res){
 		else if(topfan2.length <4) topfan2.push(singleTopFan);
 		else if(topfan3.length <4) topfan3.push(singleTopFan);
 	}
-	/*var topfan = [
-		{rank: "01",author: "Smith Wright",authorimg: "img/authors/1.png",authorid: 1,authorspending:3.3},
-		{rank: "02",author: "Amillia Nnor",authorimg: "img/authors/2.png",authorid: 2,authorspending:3.0},
-		{rank: "03",author: "Naretor-Nole",authorimg: "img/authors/3.png",authorid: 3,authorspending:2.9},
-		{rank: "04",author: "Johan Donem",authorimg: "img/authors/4.png",authorid: 4,authorspending:2.5},
-	];
-	var topfan2 = [
-		{rank: "05",author: "Smith Wright",authorimg: "img/authors/1.png",authorid: 1,authorspending:3.3},
-		{rank: "06",author: "Amillia Nnor",authorimg: "img/authors/2.png",authorid: 2,authorspending:3.0},
-		{rank: "07",author: "Naretor-Nole",authorimg: "img/authors/3.png",authorid: 3,authorspending:2.9},
-		{rank: "08",author: "Johan Donem",authorimg: "img/authors/4.png",authorid: 4,authorspending:2.5},
-	];
-	var topfan3 = [
-		{rank: "09",author: "Smith Wright",authorimg: "img/authors/1.png",authorid: 1,authorspending:3.3},
-		{rank: "10",author: "Amillia Nnor",authorimg: "img/authors/2.png",authorid: 2,authorspending:3.0},
-		{rank: "11",author: "Naretor-Nole",authorimg: "img/authors/3.png",authorid: 3,authorspending:2.9},
-		{rank: "12",author: "Johan Donem",authorimg: "img/authors/4.png",authorid: 4,authorspending:2.5},
-	];*/
+	
 	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid ORDER BY likes DESC LIMIT 0,4' );
 	if(!itemDB) itemDB = [];
 	for ( const i in itemDB ) {
@@ -380,40 +256,7 @@ router.get('/item/:itemid', async function(req,res){
 	for ( const i in itemDB ) {
 		items.push(itemDB[ i ]);
 	}
-	/*var items = [
-		{ itemid: 1, tag: "branding", title: "After Snow: Attraction", img:"img/art-work/9.png",
-		author: "@Johan Done",authorimg: "img/authors/1.png",authorid: 1,price:0.081,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 2, tag: "design", title: "Mortimer Crypto Mystic", img:"img/art-work/2.png",
-		author: "@LarySmith-3",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 3, tag: "development", title: "People are the pillars", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		endbidtime: "1630473063000"
-		},
-	];*/
+	
 	res.render('pages/item-detail', {
 		pagetitle: pagetitle,
 		topfan:topfan,
@@ -869,8 +712,47 @@ router.get('/sign-up', function(req,res){
 	});
 });
 
+router.post('/register', async function(req,res){
+	//console.log(req.body);
+	var returnObj = {};
+	returnObj.result = "failed";
+	
+	if(req.body && req.body.name && req.body.email && req.body.address && req.body.signatureObject){
+		var name = req.body.name;
+		var email = req.body.email;
+		var address = req.body.address;
+		var signatureObject = req.body.signatureObject;
+		var actualAddress = web3.web3Verify(address,"By signning up, you are agreed to our Terms & Conditions",signatureObject);
+		//console.log(name,email,address,signatureObject,actualAddress);
+		if(actualAddress){
+			var insertResult = await mysqlFront.runInsertQuery( 'INSERT INTO spotlight_author(authorname,email,longAddr) VALUES(?,?,?)' , [name,email,address] );
+			console.log("new insert id"+insertResult+" and "+insertResult.insertId);
+			returnObj.result = "success";
+			returnObj.insertId = insertResult.insertId;
+		}
+	}
+		
+	res.json(returnObj);
+});
+
 router.get('/login-process', function(req,res){
 	/* TODO: Create login section in Redis and detect if the user is signed up or not */
+});
+
+router.get('/getEmail/:address', async function(req,res){
+	var address = req.params.address;
+	//Return this object
+	var returnObj = {};
+	returnObj.result = "failed";
+	
+	var itemDB = await mysqlFront.runQuery( 'SELECT email FROM spotlight_author WHERE LOWER(longAddr) = LOWER("'
+	+address+'") LIMIT 0,2' );
+	if(!itemDB) itemDB = [];
+	if(itemDB && itemDB.length >0 && itemDB[ 0 ] && itemDB[ 0 ].email){ 
+		returnObj.result = "success";
+		returnObj.email = itemDB[ 0 ].email;
+	}
+	res.json(returnObj);
 });
 
 /*router.get('/sharks', function(req,res){

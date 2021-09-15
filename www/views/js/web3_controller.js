@@ -21,6 +21,7 @@ let provider;
 let selectedAccount;
 
 let isAddressRegistered = false;
+let isLogin = false;
 /**
  * Setup the orchestra
  */
@@ -33,15 +34,16 @@ function init() {
 
   // Check that the web page is run in a secure context,
   // as otherwise MetaMask won't be available
-  if(location.protocol !== 'https:') {
+  /*if(location.protocol !== 'https:') {
     // https://ethereum.stackexchange.com/a/62217/620
     const alert = document.querySelector("#alert-error-https");
     alert.style.display = "block";
     document.querySelector("#btn-connect").setAttribute("disabled", "disabled");
 	document.querySelector("#btn-connect").style.display = "none";
 	document.querySelector("#btn-disconnect").style.display = "none";
+	document.querySelector("#btn-account").style.display = "none";
     return;
-  }
+  }*/
 
 	/*if(localStorage.getItem('provider')){
 		provider = JSON.parse(localStorage.getItem('provider'));
@@ -78,7 +80,19 @@ function init() {
   });
 
   console.log("Web3Modal instance is", web3Modal);
-  if(localStorage.getItem('myAccount')) onConnect();
+  if(localStorage.getItem('myAccount')){
+	  onConnect();
+	  var addressElements = document.getElementsByName("address");
+	  for(var i=0;i<addressElements.length;i++){
+		addressElements[i].value = localStorage.getItem('myAccount');
+	  }
+  }
+  if(localStorage.getItem('myEmail') && localStorage.getItem('myEmail')!="false"){
+	  var addressElements = document.getElementsByName("email");
+	  for(var i=0;i<addressElements.length;i++){
+		addressElements[i].value = localStorage.getItem('myEmail');
+	  }
+  }
 }
 
 
@@ -90,7 +104,7 @@ async function fetchAccountData() {
 	  document.querySelector("#artworkLoginButton").style.display = "none";
   // Get a Web3 instance for the wallet
   const web3 = new Web3(provider);
-
+	//if(!isLogin) return;
   console.log("Web3 instance is", web3);
 
   // Get connected chain id from Ethereum node
@@ -119,7 +133,7 @@ async function fetchAccountData() {
   localStorage.setItem('myAccount', selectedAccount);
 
 $.ajax({
-  url: "getEmail.php?address="+selectedAccount,
+  url: "/getEmail/"+selectedAccount,
   beforeSend: function( xhr ) {
     xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
   }
@@ -129,31 +143,62 @@ $.ajax({
 		return;
 	}else{ 
 		var insertID = JSON.parse(data);
-		insertID = (insertID["email"])? insertID["email"] : false;
+		insertID = (insertID.email)? insertID.email : false;
 		if(insertID){
-			document.querySelector("#selected-email").textContent = insertID;
-			document.querySelector("#selected-email").style.display = "block";
-			document.querySelector("#sign-in_emailform").style.display = "block";
+			if(document.querySelector("#selected-email")){
+				document.querySelector("#selected-email").textContent = insertID;
+				document.querySelector("#selected-email").style.display = "block";
+			}
+			if(document.querySelector("#sign-in_emailform")){
+				document.querySelector("#sign-in_emailform").style.display = "block";
+			}
 			//document.querySelector(".sign-in__input-container").style.display = "none";
-			document.querySelector("#sign-in-form").style.display = "none";
-			document.querySelector("#defaultAccTitle").style.display = "block";
-			document.querySelector("#defaultRegisTitle").style.display = "none";
+			if(document.querySelector("#sign-in-form")){
+				document.querySelector("#sign-in-form").style.display = "none";
+			}
+			if(document.querySelector("#defaultAccTitle"))
+				document.querySelector("#defaultAccTitle").style.display = "block";
+			if(document.querySelector("#defaultRegisTitle"))
+				document.querySelector("#defaultRegisTitle").style.display = "none";
 			localStorage.setItem('myEmail', insertID);
+			if(localStorage.getItem('myAccount')){
+				var addressElements = document.getElementsByName("address");
+				for(var i=0;i<addressElements.length;i++){
+					addressElements[i].value = localStorage.getItem('myAccount');
+				}
+			}
+			if(localStorage.getItem('myEmail') && localStorage.getItem('myEmail')!="false"){
+				var addressElements = document.getElementsByName("email");
+				for(var i=0;i<addressElements.length;i++){
+					addressElements[i].value = localStorage.getItem('myEmail');
+				}
+			}
 			isAddressRegistered = true;
+			if(document.getElementById("main_contact_form")) window.location.href = "/profile";
 		}else{
-			document.querySelector("#selected-email").style.display = "none";
-			document.querySelector("#sign-in_emailform").style.display = "none";
+			if(document.querySelector("#selected-email")){
+				document.querySelector("#selected-email").style.display = "none";
+			}
+			if(document.querySelector("#sign-in_emailform")){
+				document.querySelector("#sign-in_emailform").style.display = "none";
+			}
 			//document.querySelector(".sign-in__input-container").style.display = "none";
-			document.querySelector("#sign-in-form").style.display = "block";
-			document.querySelector("#defaultAccTitle").style.display = "none";
-			document.querySelector("#defaultRegisTitle").style.display = "block";
+			if(document.querySelector("#sign-in-form")){
+				document.querySelector("#sign-in-form").style.display = "block";
+			}
+			if(document.querySelector("#defaultAccTitle"))
+				document.querySelector("#defaultAccTitle").style.display = "none";
+			if(document.querySelector("#defaultRegisTitle"))
+				document.querySelector("#defaultRegisTitle").style.display = "block";
 			localStorage.setItem('myEmail', insertID);
 			isAddressRegistered = false;
-			$('#userModalCenter').modal('show');
+			//$('#userModalCenter').modal('show');
+			if(!document.getElementById("main_contact_form")) window.location.href = "/sign-up";
 		}
-		document.querySelector("#sendEmailButton").setAttribute("disabled","disabled");
-		
-		if (updateBlockchainData && typeof updateBlockchainData === "function") updateBlockchainData();
+		if(document.querySelector("#sendEmailButton")){
+			document.querySelector("#sendEmailButton").setAttribute("disabled","disabled");
+		}
+		if (typeof updateBlockchainData === "function" && updateBlockchainData) updateBlockchainData();
 	}
   });
   // Get a handl
@@ -192,7 +237,20 @@ $.ajax({
   //document.querySelector("#btn-accountdetails").style.display = "block";
   //$('#btn-accDetailButton').click();
   document.querySelector("#btn-connect").style.display = "none";
-  document.querySelector("#btn-disconnect").style.display = "block";
+  //document.querySelector("#btn-disconnect").style.display = "block";
+  document.querySelector("#btn-account").style.display = "block";
+  if(localStorage.getItem('myAccount')){
+	  var addressElements = document.getElementsByName("address");
+	  for(var i=0;i<addressElements.length;i++){
+		addressElements[i].value = localStorage.getItem('myAccount');
+	  }
+  }
+  if(localStorage.getItem('myEmail') && localStorage.getItem('myEmail')!="false"){
+	  var addressElements = document.getElementsByName("email");
+	  for(var i=0;i<addressElements.length;i++){
+		addressElements[i].value = localStorage.getItem('myEmail');
+	  }
+  }
 }
 
 
@@ -212,7 +270,8 @@ async function refreshAccountData() {
   //document.querySelector("#prepare").style.display = "block";
   //document.querySelector("#btn-accountdetails").style.display = "none";
   document.querySelector("#btn-connect").style.display = "block";
-  document.querySelector("#btn-disconnect").style.display = "none";
+  //document.querySelector("#btn-disconnect").style.display = "none";
+  document.querySelector("#btn-account").style.display = "none";
 
   // Disable button while UI is loading.
   // fetchAccountData() will take a while as it communicates
@@ -228,7 +287,7 @@ async function refreshAccountData() {
  * Connect wallet button pressed.
  */
 async function onConnect() {
-
+	isLogin = true;
   console.log("Opening a dialog", web3Modal);
   try {
     provider = await web3Modal.connect();
@@ -282,9 +341,13 @@ async function onDisconnect() {
   //document.querySelector("#connected").style.display = "none";
   //document.querySelector("#btn-accountdetails").style.display = "none";
   document.querySelector("#btn-connect").style.display = "block";
-  document.querySelector("#btn-disconnect").style.display = "none";
+  //document.querySelector("#btn-disconnect").style.display = "none";
+  document.querySelector("#btn-account").style.display = "none";
   if(document.querySelector("#artworkLoginButton")) 
 	  document.querySelector("#artworkLoginButton").style.display = "block";
+  isLogin = false;
+  //localStorage.setItem('myAccount') = false;
+  //localStorage.setItem('myEmail') = false;
 }
 
 
@@ -296,7 +359,7 @@ window.addEventListener('load', async () => {
   document.querySelector("#btn-connect").addEventListener("click", onConnect);
   if(document.querySelector("#btn-connect2")) document.querySelector("#btn-connect2").addEventListener("click", onConnect);
   //document.querySelector("#btn-connect3").addEventListener("click", onConnect);
-  document.querySelector("#btn-disconnect").addEventListener("click", onDisconnect);
+  //document.querySelector("#btn-disconnect").addEventListener("click", onDisconnect);
 });
 
  function isJsonString(str) {
