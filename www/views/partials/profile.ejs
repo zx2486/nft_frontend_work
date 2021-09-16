@@ -29,13 +29,19 @@
 				<% if(typeof profile != "undefined"){ %>
                 <div class="col-12 col-lg-3">
 					<% if(typeof editID != "undefined"){ %>
-					<!--<form method="post" target="/editprofile" enctype="multipart/form-data">-->
+					<form method="post" target="/editprofile" id="editForm" enctype="multipart/form-data" novalidate>
 					<div class="service_single_content collection-item">
                         <!-- Icon -->
                         <div class="collection_icon">
-                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+                            <img src="<%= profile.authorheader %>" id="profile-header" class="center-block" 
+							alt="Image not found" 
+							<% if(typeof profile.authorIPFSheader != "undefined"){ %>
+							onerror="this.onerror=null;this.src='<%= profile.authorIPFSheader %>';"
+							<% } %>
+							>
 								<label class="btn" for="my-file-selector">
-									<input id="my-file-selector" name="profile-image" type="file" class="d-none">
+									<input id="my-file-selector" name="profile-header" type="file" 
+									accept="image/*" class="d-none" onChange='changeImg(this,"profile-header")'>
 									Change Image
 								</label>
 							</img>
@@ -43,12 +49,39 @@
                         </div>
 						
                         <span class="aut-info">
-                            <img src="/img/authors/2.png" width="50" alt="">
+                            <img src="<%= profile.authorimg %>" width="50" id="profile-img" 
+							alt="Image not found" 
+							<% if(typeof profile.authorIPFSimg != "undefined"){ %>
+							onerror="this.onerror=null;this.src='<%= profile.authorIPFSimg %>';"
+							<% } %>
+							>
+							
 							<label class="btn" for="my-file-selector2">
-								<input id="my-file-selector2" name="profile-image2" type="file" class="d-none">
+								<input id="my-file-selector2" name="profile-img" type="file" 
+								accept="image/*" class="d-none" onChange='changeImg(this,"profile-img")'>
 								Change<br>Profile
 							</label>
                         </span>
+						<script>
+						function changeImg(target,imageID){
+							//console.log(target.files[0],imageID);
+							//$().attr('src', e.target.result);
+							if(target && target.files[0]){
+								if(target.files[0].size > 4*1048576){
+								   alert("Please limit the file size to be 4MB or below.");
+								   target.value = "";
+								}else readURL(target.files[0],'#'+imageID);
+							}
+						}
+						function readURL(src,pointingID){
+							if(!src) return;
+							var reader = new FileReader();	        
+							reader.onload = function (e) {
+								$(pointingID).attr('src', e.target.result);
+							}
+							reader.readAsDataURL(src);
+						}
+						</script>
 						<style>
 						.collection_icon .btn {
 							position: absolute;
@@ -93,54 +126,108 @@
 						</style>
                         <div class="collection_info text-center">
 							
-								<h6><input style="width:100%" type="text" name="name" value="<%= profile.name %>"/></h6>
+								<h6><input style="width:100%" type="text" id="name" name="name" value="<%= profile.name %>"/></h6>
 								<p class="w-text mr-5p"><input style="width:100%" type="text" name="title" value="<%= profile.title %>"/></p>
 								<p class="mt-15"><textarea style="width:100%" name="description"><%= profile.description %></textarea></p>
 								<div class="search-widget-area mt-15">
-									<form action="#" method="get" onsubmit="copyAddress()">
+									<div>
 										<input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
-										<button class="btn"><i class="fa fa-copy"></i></button>
-									</form>
+										<button type="button" class="btn" data-clipboard-text="<%= profile.longAddr %>">
+									<i class="fa fa-copy"></i></button>
+									</div>
 								</div>
 								<ul class="social-links mt-15">
 								  <li>
 								  <span class="fa fa-facebook-f"></span>
-								  <input type="text" style="width:100%" name="facebook" value="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>"/>
+								  <input type="text" style="width:100%" name="facebook" 
+								  value="<% if(profile.socialnetwork.facebook){ %><%= profile.socialnetwork.facebook %><% }else{ %>#<% } %>"/>
 								  </li>
 								  <li>
 								  <span class="fa fa-twitter"></span>
-								  <input type="text" style="width:100%" name="twitter" value="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>"/>
+								  <input type="text" style="width:100%" name="twitter" 
+								  value="<% if(profile.socialnetwork.twitter){ %><%= profile.socialnetwork.twitter %><% }else{ %>#<% } %>"/>
 								  </li>
 								  <li>
 								  <span class="fa fa-linkedin"></span>
-								  <input type="text" style="width:100%" name="linkedin" value="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>"/>
+								  <input type="text" style="width:100%" name="linkedin" 
+								  value="<% if(profile.socialnetwork.linkedin){ %><%= profile.socialnetwork.linkedin %><% }else{ %>#<% } %>"/>
 								  </li>
 								  <li>
 								  <span class="fa fa-instagram"></span>
-								  <input type="text" style="width:100%" name="instagram" value="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>"/>
+								  <input type="text" style="width:100%" name="instagram" 
+								  value="<% if(profile.socialnetwork.instagram){ %><%= profile.socialnetwork.instagram %><% }else{ %>#<% } %>"/>
 								  </li>
 							   </ul>
-							   
-								<a href="#" class="more-btn mt-15">Edit</a>
-							 <script>
-							function copyAddress(){
-								//TODO: Copy the address to clipboard
-								var fullAddress = "<%= profile.longAddr %>";
-								return false;
-							}
-							</script>
+							   <input type="hidden" id="signatureObject" name="signatureObject" value="">
+								<button type="button" onclick="onSubmitForm()" class="more-btn mt-15">Edit</a>
+								
                         </div>
                         
                     </div>
-					<!--</form>-->
+					</form>
+						<script>
+						function onSubmitForm(){
+							if(!$("#name")[0].value || !$("#wallet")[0].value){
+								alert("Please fill in the required information and agree with the terms and conditions");
+								return false;
+							}
+							if(!provider || !localStorage.getItem('myAccount')){
+								alert("Not connected with valid wallet");
+								return false;
+							}
+							const web3 = new Web3(provider);
+							var signatureObject = web3.eth.personal.sign(web3.utils.utf8ToHex("Confirm editing the information"), localStorage.getItem('myAccount'),"solon is handsome"+new Date().getTime())
+							.then(function(signatureObject){
+								if(signatureObject){
+									var formData = new FormData($("#editForm")[0]);
+									document.getElementById("signatureObject").value = signatureObject;
+									$.ajax({
+									   type: "POST",
+									   url: "/editprofile",
+									   data: formData,
+									   processData: false,
+										contentType: false,
+										cache: false,
+									   success: function(data)
+									   {
+											if(!data || typeof data !== "object"){
+												alert("Edit profile failed:"+data);
+												return;
+											}else{
+												var insertID = data;
+												insertID = (insertID.result)? insertID.result : false;
+												if(insertID && insertID =="success"){
+													alert("Edit profile completed.");
+													location.reload();
+												}else alert("Edit profile failed. Please retry");
+												//location.reload();
+											}
+									   }
+									 });
+								}
+							});									
+							return false;
+						}
+						</script>
 					<% }else{ %>
                    <div class="service_single_content collection-item">
                         <!-- Icon -->
                         <div class="collection_icon">
-                            <img src="/img/art-work/profile-header.jpg" class="center-block" alt="">
+							<img src="<%= profile.authorheader %>" id="profile-header" class="center-block" 
+							alt="Image not found" 
+							<% if(typeof profile.authorIPFSheader != "undefined"){ %>
+							onerror="this.onerror=null;this.src='<%= profile.authorIPFSheader %>';"
+							<% } %>
+							>
                         </div>
                         <span class="aut-info">
-                            <img src="/img/authors/2.png" width="50" alt="">
+                            <!--<img src="/img/authors/2.png" width="50" alt="">-->
+							<img src="<%= profile.authorimg %>" width="50" id="profile-img" 
+							alt="Image not found" 
+							<% if(typeof profile.authorIPFSimg != "undefined"){ %>
+							onerror="this.onerror=null;this.src='<%= profile.authorIPFSimg %>';"
+							<% } %>
+							>
                         </span>
                         <div class="collection_info text-center">
 							
@@ -151,37 +238,36 @@
                             <p class="mt-15"><%= profile.description %></p>
 
                             <div class="search-widget-area mt-15">
-                                <form action="#" method="get" onsubmit="copyAddress()">
-                                    <input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
-                                    <button class="btn"><i class="fa fa-copy"></i></button>
-                                </form>
+                                <div>
+									<input type="text" name="wallet" id="wallet" value="<%= profile.shortAddr %>">
+									<button type="button" class="btn" data-clipboard-text="<%= profile.longAddr %>">
+									<i class="fa fa-copy"></i></button>
+								</div>
                             </div>
 							
                             <ul class="social-links mt-15">
-                              <li><a href="<% if(profile.facebook){ %><%= profile.facebook %><% }else{ %>#<% } %>">
+                              <li><a href="<% if(profile.socialnetwork.facebook){ %><%= profile.socialnetwork.facebook %><% }else{ %>#<% } %>">
 							  <span class="fa fa-facebook-f"></span></a></li>
-                              <li><a href="<% if(profile.twitter){ %><%= profile.twitter %><% }else{ %>#<% } %>">
+                              <li><a href="<% if(profile.socialnetwork.twitter){ %><%= profile.socialnetwork.twitter %><% }else{ %>#<% } %>">
 							  <span class="fa fa-twitter"></span></a></li>
-                              <li><a href="<% if(profile.linkedin){ %><%= profile.linkedin %><% }else{ %>#<% } %>">
+                              <li><a href="<% if(profile.socialnetwork.linkedin){ %><%= profile.socialnetwork.linkedin %><% }else{ %>#<% } %>">
 							  <span class="fa fa-linkedin"></span></a></li>
-                              <li><a href="<% if(profile.instagram){ %><%= profile.instagram %><% }else{ %>#<% } %>">
+                              <li><a href="<% if(profile.socialnetwork.instagram){ %><%= profile.socialnetwork.instagram %><% }else{ %>#<% } %>">
 							  <span class="fa fa-instagram"></span></a></li>
                            </ul>
 
                             <a href="#" class="more-btn mt-15">Follow</a>
 							
-							<script>
-							function copyAddress(){
-								//TODO: Copy the address to clipboard
-								var fullAddress = "<%= profile.longAddr %>";
-								return false;
-							}
-							</script>
+							
                         </div>
                         
                     </div>
 					<% } %>
-                        
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+					<script>
+					var clipboard = new ClipboardJS('.btn');
+					//function preventSubmit(){ return false; }
+					</script>
                 </div>
 				<div class="col-12 col-md-9">
 				

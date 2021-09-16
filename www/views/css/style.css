@@ -5081,12 +5081,12 @@ textarea:required {
 
 /* ##### Sidebar CSS ##### */
 
-.search-widget-area form {
+.search-widget-area div {
     position: relative;
     z-index: 1;
 }
 
-.search-widget-area form input {
+.search-widget-area div input {
     width: 100%;
     height: 45px;
     /*border: 2px solid rgba(255, 255, 255, 0.2);*/
@@ -5098,7 +5098,7 @@ textarea:required {
     border-radius: 30px;
 }
 
-.search-widget-area form button {
+.search-widget-area div button {
     width: 60px;
     height: 45px;
     background-color: transparent;
@@ -5110,6 +5110,8 @@ textarea:required {
     top: 0;
     right: 0;
     z-index: 100;
+	align-items: center;
+    display: flex;
 }
 
 .widget-title h5 {

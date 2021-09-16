@@ -16,7 +16,13 @@ mysqlFront.on('connection', function (connection) {
     console.error(new Date(), 'MySQL close', err);
   });
 });
-  
+mysqlFront.query("select * from spotlight_category",  (error, elements)=>{
+            if(error){
+                console.log("Error on loading database"+error);
+            }
+            console.log("First query to db with contents"+elements);
+        });
+
 module.exports = mysqlFront;
 
 module.exports.runQuery = (query) =>{

@@ -3,7 +3,7 @@ const app = express();
 
 //Accepting form data
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit:'20mb', extended: true }));
 app.use(bodyParser.json());
 
 // set the view engine to ejs
@@ -20,6 +20,29 @@ var wordpressGMT = " +0800";
 
 //Moment JS
 const moment = require('moment');
+
+//Cookie
+var cookieParser = require('cookie-parser');
+app.use(cookieParser('solon_is_handsome'));
+
+//Multiform data handling
+const multer  = require('multer');
+//const upload = multer({ dest: 'uploads/' });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix + file.originalname)
+  }
+});
+const upload = multer({ storage: storage });
+//app.use(express.limit('20M')); //Limit file upload to be 20MB or below
+
+
+//IPFS client
+var ipfsClient = require("./ipfsClient");
 
 requestAgentOptions = {
   host: wordpressURL
@@ -44,7 +67,7 @@ const pathcss = __dirname + '/views/css';
 const pathimg = __dirname + '/views/img';
 const pathfonts = __dirname + '/views/fonts';
 const pathtemplate = __dirname + '/views/template';
-const pathupload = __dirname + '/views/uploads';
+const pathupload = __dirname + '/uploads';
 const path = __dirname + '/views';
 const port = 80;
 
@@ -511,64 +534,73 @@ router.get('/create-item', function(req,res){
 		profile: profile,
 	});
 });
-router.get('/profile', function(req,res){
+router.get('/profile', async function(req,res){
 	/*Related to the boy*/
-	var profile = {
-		name: "Bill Star",
-		title: "Creative KOL",
-		description: "A famous star who have a lot of ideas on NFT",
-		shortAddr: "Xjo03s-osi6732...",
-		longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
-	};
-	/* optional attributes
-	instagram
-	facebook
-	twitter
-	linkedin
-	*/
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress:"Xjo03s-osi6732asdasd-5465460-fgdfgdfg";
+	var profile = { };
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author WHERE LOWER(longAddr) = LOWER("'
+	+address+'") LIMIT 0,2' );
+	if(!itemDB) itemDB = [];
+	if(itemDB && itemDB.length >0 && itemDB[ 0 ] && itemDB[ 0 ].email){ 
+		profile.name = itemDB[ 0 ].authorname;
+		profile.title = itemDB[ 0 ].profileText;
+		profile.description = itemDB[ 0 ].description;
+		profile.shortAddr = (address.length >14)? address.substring(0,14)+"..." : address;
+		profile.longAddr = address;
+		profile.id = itemDB[ 0 ].authorid;
+		if(itemDB[ 0 ].authorimg){
+			if(isJson(itemDB[ 0 ].authorimg)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorimg);
+				profile.authorimg = '/uploads/'+authorimgObj.local;
+				profile.authorIPFSimg = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorimg = itemDB[ 0 ].authorimg;
+		}else profile.authorimg = "/img/art-work/profile-header.jpg";
+		if(itemDB[ 0 ].authorheader){
+			if(isJson(itemDB[ 0 ].authorheader)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorheader);
+				profile.authorheader = '/uploads/'+authorimgObj.local;
+				profile.authorIPFSheader = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorheader = itemDB[ 0 ].authorheader;
+		}else profile.authorheader = "/img/authors/2.png";
+		if(itemDB[ 0 ].socialnetwork && isJson(itemDB[ 0 ].socialnetwork)){
+			profile.socialnetwork = JSON.parse(itemDB[ 0 ].socialnetwork);
+		}else profile.socialnetwork = {};
+	}else{	
+		profile = {
+			id: 0,
+			name: "Bill Star",
+			title: "Creative KOL",
+			description: "A famous star who have a lot of ideas on NFT",
+			shortAddr: "Xjo03s-osi6732...",
+			longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
+			socialnetwork: {}
+		};
+	}
 	/*Related to items*/
-	var category = [
-		{ tag: '*', name: "All"},
-		{ tag: '.branding', name: "Branding"},
-		{ tag: '.design', name: "Design"},
-		{ tag: '.development', name: "Development"}
-	];
-	var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 2, tag: "design", title: "Resonate Sanctuary II", img:"img/art-work/2.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 3, tag: "development", title: "Analogue refraction #3", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		updatetime: "2.5 Hours Ago",likes: "211"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		updatetime: "1.25 Hour Ago",likes: "121"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.5 Hour Ago",likes: "322"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];
-	
-	
+	var categoryDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_category' );
+	//console.log(categoryDB);
+	if(!categoryDB) categoryDB = [];
+	//Add the dot in class
+	for ( const i in categoryDB ) {
+		if(categoryDB[ i ] && categoryDB[ i ].tag) 
+			categoryDB[ i ].tag = '.'+categoryDB[ i ].tag;
+	}
+	var category = [ { tag: '*', name: "All"}, ];
+	for ( const i in categoryDB ) {
+		category.push(categoryDB[ i ]);
+	}
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE b.authorid = '+profile.id );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+		
 	var editID = 10;
 	var pagetitle = "Profile";
 	res.render('pages/profile', {
@@ -579,62 +611,80 @@ router.get('/profile', function(req,res){
 		editID: editID,
 	});
 });
-router.get('/profile/:profileid', function(req,res){
-	/*Related to the boy*/
-	var profile = {
-		name: "Morgan Wright",
-		title: "Creative NFTs Designer",
-		description: "A NFT Creator",
-		shortAddr: "Xjo03s-osi6732...",
-		longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
-	};
-	/* optional attributes
-	instagram
-	facebook
-	twitter
-	linkedin
-	*/
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+router.get('/profile/:profileid', async function(req,res){
+	var profileid = req.params.profileid;
+	var profile = { };
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author WHERE authorid = '
+	+profileid+' LIMIT 0,2' );
+	if(!itemDB) itemDB = [];
+	if(itemDB && itemDB.length >0 && itemDB[ 0 ] && itemDB[ 0 ].email){ 
+		profile.name = itemDB[ 0 ].authorname;
+		profile.title = itemDB[ 0 ].profileText;
+		profile.description = itemDB[ 0 ].description;
+		var address = itemDB[ 0 ].longAddr;
+		profile.shortAddr = (address.length >14)? address.substring(0,14)+"..." : address;
+		profile.longAddr = address;
+		profile.id = itemDB[ 0 ].authorid;
+		if(itemDB[ 0 ].authorimg){
+			if(isJson(itemDB[ 0 ].authorimg)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorimg);
+				profile.authorimg = '/uploads/'+authorimgObj.local;
+				profile.authorIPFSimg = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorimg = itemDB[ 0 ].authorimg;
+		}else profile.authorimg = "/img/art-work/profile-header.jpg";
+		if(itemDB[ 0 ].authorheader){
+			if(isJson(itemDB[ 0 ].authorheader)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorheader);
+				profile.authorheader = '/uploads/'+authorimgObj.local;
+				profile.authorIPFSheader = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorheader = itemDB[ 0 ].authorheader;
+		}else profile.authorheader = "/img/authors/2.png";
+		if(itemDB[ 0 ].socialnetwork && isJson(itemDB[ 0 ].socialnetwork)){
+			profile.socialnetwork = JSON.parse(itemDB[ 0 ].socialnetwork);
+		}else profile.socialnetwork = {};
+	}else{	
+		profile = {
+			id: 0,
+			name: "Bill Star",
+			title: "Creative KOL",
+			description: "A famous star who have a lot of ideas on NFT",
+			shortAddr: "Xjo03s-osi6732...",
+			longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
+			socialnetwork: {}
+		};
+	}
 	/*Related to items*/
-	var category = [
-		{ tag: '*', name: "All"},
-		{ tag: '.branding', name: "Branding"},
-		{ tag: '.design', name: "Design"},
-		{ tag: '.development', name: "Development"}
-	];
-	var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 2, tag: "design", title: "Resonate Sanctuary II", img:"img/art-work/2.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 3, tag: "development", title: "Analogue refraction #3", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		updatetime: "2.5 Hours Ago",likes: "211"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		updatetime: "1.25 Hour Ago",likes: "121"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.5 Hour Ago",likes: "322"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];
+	var categoryDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_category' );
+	//console.log(categoryDB);
+	if(!categoryDB) categoryDB = [];
+	//Add the dot in class
+	for ( const i in categoryDB ) {
+		if(categoryDB[ i ] && categoryDB[ i ].tag) 
+			categoryDB[ i ].tag = '.'+categoryDB[ i ].tag;
+	}
+	var category = [ { tag: '*', name: "All"}, ];
+	for ( const i in categoryDB ) {
+		category.push(categoryDB[ i ]);
+	}
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE b.authorid = '+profile.id );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
 	
 	
 	
@@ -705,7 +755,7 @@ router.get('/nft-holding', function(req,res){
 
 router.get('/sign-up', function(req,res){
 	var pagetitle = "Sign Up";
-	var address = "Xjo03s-osi6732asdasd-5465460-fgdfgdfg";
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress :"Xjo03s-osi6732asdasd-5465460-fgdfgdfg";
 	res.render('pages/register', {
 		pagetitle: pagetitle,
 		address: address,
@@ -735,6 +785,81 @@ router.post('/register', async function(req,res){
 	res.json(returnObj);
 });
 
+router.post('/editprofile'
+, upload.fields([{ name: 'profile-header', maxCount: 1 }, { name: 'profile-img', maxCount: 1 }])
+, async function(req,res){
+	//console.log(req.body);
+	var returnObj = {};
+	returnObj.result = "failed";
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress:false;
+	if(!address){
+		returnObj.msg = "Please login first";
+		res.json(returnObj);
+		return;
+	}
+	//console.log("Before the req bdody check"+req.body);
+	if(req.body && req.body.name && req.body.wallet && req.body.signatureObject){
+		//console.log("Current path");
+		var name = req.body.name;
+		//var email = req.body.email;
+		var clientWallet = req.body.wallet;
+		var signatureObject = req.body.signatureObject;
+		var actualAddress = web3.web3Verify(address,"Confirm editing the information",signatureObject);
+		if(!actualAddress){
+			returnObj.msg = "Please sign the changes";
+			res.json(returnObj);
+			return;
+		}
+		//req.files['profile-header'][0] -> File
+		//req.body will contain the text fields
+		var newProfileHeader = false;
+		if(req.files && req.files['profile-header'] && req.files['profile-header'][0]){
+			//There is a new profile header image
+			var IPFSHash = await ipfsClient.add(req.files['profile-header'][0]);
+			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
+			var localImageName = req.files['profile-header'][0].filename;
+			newProfileHeader = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+		}
+		var newProfileImage = false;
+		if(req.files && req.files['profile-img'] && req.files['profile-img'][0]){
+			//There is a new profile image
+			var IPFSHash = await ipfsClient.add(req.files['profile-img'][0]);
+			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
+			var localImageName = req.files['profile-img'][0].filename;
+			newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+		}
+		var title = req.body.title;
+		var description = req.body.description;
+		var socialnetworkobject = JSON.stringify({
+			facebook: req.body.facebook,
+			twitter: req.body.twitter,
+			linkedin: req.body.linkedin,
+			instagram: req.body.instagram,
+		});
+		
+		var updateStatement = 'UPDATE spotlight_author SET authorname = ?, profileText = ?, description = ?, socialnetwork=?';
+		var updateArray = [name,title,description,socialnetworkobject];
+		
+		if(newProfileHeader){
+			updateStatement += ", authorheader = ?";
+			updateArray.push(newProfileHeader);
+		}
+		if(newProfileImage){
+			updateStatement += ", authorimg = ?";
+			updateArray.push(newProfileImage);
+		}
+		updateStatement += 'WHERE longAddr = ? ';
+		updateArray.push(address);
+		
+		var updateResult = await mysqlFront.runInsertQuery(updateStatement,updateArray);
+		console.log("new update id"+updateResult+" and "+updateResult.insertId);
+		returnObj.result = "success";
+		//returnObj.insertId = updateResult.insertId;
+	}
+	
+	res.json(returnObj);
+});
+
 router.get('/login-process', function(req,res){
 	/* TODO: Create login section in Redis and detect if the user is signed up or not */
 });
@@ -752,6 +877,9 @@ router.get('/getEmail/:address', async function(req,res){
 		returnObj.result = "success";
 		returnObj.email = itemDB[ 0 ].email;
 	}
+	//if(!req.signedCookies.loginAddress) {
+        res.cookie('loginAddress', address, { signed: true });
+    //}
 	res.json(returnObj);
 });
 

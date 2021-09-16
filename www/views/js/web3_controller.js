@@ -175,6 +175,7 @@ $.ajax({
 			}
 			isAddressRegistered = true;
 			if(document.getElementById("main_contact_form")) window.location.href = "/profile";
+			else if(isDifferentAccount) location.reload(); 
 		}else{
 			if(document.querySelector("#selected-email")){
 				document.querySelector("#selected-email").style.display = "none";
@@ -194,6 +195,7 @@ $.ajax({
 			isAddressRegistered = false;
 			//$('#userModalCenter').modal('show');
 			if(!document.getElementById("main_contact_form")) window.location.href = "/sign-up";
+			else if(isDifferentAccount) location.reload(); 
 		}
 		if(document.querySelector("#sendEmailButton")){
 			document.querySelector("#sendEmailButton").setAttribute("disabled","disabled");
