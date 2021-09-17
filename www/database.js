@@ -1,10 +1,10 @@
 var mysql = require('mysql');
 
 var mysqlFront = mysql.createPool({
-  host     : 'heynftdb.cw2he70mrmkg.ap-southeast-1.rds.amazonaws.com', 
-  user     : 'dbMag',
-  password : 'ggVH5RrBmVxlwW5GZ8mV',
-  database : 'heynft_front',
+  host     : process.env.DB_HOST, 
+  user     : process.env.DB_USER,
+  password : process.env.DB_PW,
+  database : process.env.DB_DB,
   connectionLimit : 100,
   connectTimeout  : 30 * 1000,
   acquireTimeout  : 30 * 1000,
