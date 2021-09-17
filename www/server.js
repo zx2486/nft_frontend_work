@@ -14,8 +14,8 @@ const router = express.Router();
 'use strict';
 var request = require("request");
 var requestAgentOptions;
-var wordpressURL = 'ec2-13-214-38-205.ap-southeast-1.compute.amazonaws.com';
-var wordpressGMT = " +0800";
+var wordpressURL = process.env.wordpressURL;
+var wordpressGMT = process.env.wordpressGMT;
 //var requestAgent;
 
 //Moment JS
