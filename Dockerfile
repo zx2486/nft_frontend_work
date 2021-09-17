@@ -11,6 +11,7 @@ COPY www/package*.json ./
 RUN npm install
 RUN npm install request --save
 RUN npm install moment --save
+RUN npm install dotenv --save
 # If you are building your code for production
 # RUN npm ci --only=production
 
