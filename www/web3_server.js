@@ -1,5 +1,5 @@
 const Web3 = require('web3'); 
-const web3 = new Web3(new Web3.providers.HttpProvider("wss://mainnet.infura.io/v3/b5acd841e49740edb7c74a80e91ed5ac"));
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA));
 
 module.exports = web3;
 
