@@ -35,9 +35,9 @@
                         <div class="collection_icon">
                             <img src="<%= profile.authorheader %>" id="profile-header" class="center-block" 
 							alt="Image not found" 
-							<% if(typeof profile.authorIPFSheader != "undefined"){ %>
+							<% /*if(typeof profile.authorIPFSheader != "undefined"){ %>
 							onerror="this.onerror=null;this.src='<%= profile.authorIPFSheader %>';"
-							<% } %>
+							<% }*/ %>
 							>
 								<label class="btn" for="my-file-selector">
 									<input id="my-file-selector" name="profile-header" type="file" 
@@ -51,9 +51,9 @@
                         <span class="aut-info">
                             <img src="<%= profile.authorimg %>" width="50" id="profile-img" 
 							alt="Image not found" 
-							<% if(typeof profile.authorIPFSimg != "undefined"){ %>
+							<% /*if(typeof profile.authorIPFSimg != "undefined"){ %>
 							onerror="this.onerror=null;this.src='<%= profile.authorIPFSimg %>';"
-							<% } %>
+							<% }*/ %>
 							>
 							
 							<label class="btn" for="my-file-selector2">
@@ -197,7 +197,7 @@
 												var insertID = data;
 												insertID = (insertID.result)? insertID.result : false;
 												if(insertID && insertID =="success"){
-													alert("Edit profile completed.");
+													alert("Edit profile submitted. Please wait for the profile update.");
 													location.reload();
 												}else alert("Edit profile failed. Please retry");
 												//location.reload();
@@ -246,13 +246,13 @@
                             </div>
 							
                             <ul class="social-links mt-15">
-                              <li><a href="<% if(profile.socialnetwork.facebook){ %><%= profile.socialnetwork.facebook %><% }else{ %>#<% } %>">
+                              <li><a href="https://www.facebook.com/<% if(profile.socialnetwork.facebook){ %><%= profile.socialnetwork.facebook %><% }else{ %>#<% } %>">
 							  <span class="fa fa-facebook-f"></span></a></li>
-                              <li><a href="<% if(profile.socialnetwork.twitter){ %><%= profile.socialnetwork.twitter %><% }else{ %>#<% } %>">
+                              <li><a href="https://www.twitter.com/<% if(profile.socialnetwork.twitter){ %><%= profile.socialnetwork.twitter %><% }else{ %>#<% } %>">
 							  <span class="fa fa-twitter"></span></a></li>
-                              <li><a href="<% if(profile.socialnetwork.linkedin){ %><%= profile.socialnetwork.linkedin %><% }else{ %>#<% } %>">
+                              <li><a href="https://www.linkedin.com/<% if(profile.socialnetwork.linkedin){ %><%= profile.socialnetwork.linkedin %><% }else{ %>#<% } %>">
 							  <span class="fa fa-linkedin"></span></a></li>
-                              <li><a href="<% if(profile.socialnetwork.instagram){ %><%= profile.socialnetwork.instagram %><% }else{ %>#<% } %>">
+                              <li><a href="https://www.instagram.com/<% if(profile.socialnetwork.instagram){ %><%= profile.socialnetwork.instagram %><% }else{ %>#<% } %>">
 							  <span class="fa fa-instagram"></span></a></li>
                            </ul>
 

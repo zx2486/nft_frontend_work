@@ -717,7 +717,7 @@
 
 
 // Ajax Contact Form js
-
+/*
 $(function () {
     // Get the form.
     var form = $('#main_contact_form');
@@ -760,7 +760,7 @@ $(function () {
             });
     });
 });
-
+*/
 /*!
 * jquery.counterup.js 1.0
 *

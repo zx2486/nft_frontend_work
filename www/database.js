@@ -5,7 +5,10 @@ var mysqlFront = mysql.createPool({
   user     : 'dbMag',
   password : 'ggVH5RrBmVxlwW5GZ8mV',
   database : 'heynft_front',
-  connectionLimit : 100
+  connectionLimit : 100,
+  connectTimeout  : 30 * 1000,
+  acquireTimeout  : 30 * 1000,
+  timeout         : 30 * 1000, //30 seconds inactivity waiting
 });
 mysqlFront.on('connection', function (connection) {
   console.log('DB Connection established');
@@ -16,19 +19,21 @@ mysqlFront.on('connection', function (connection) {
     console.error(new Date(), 'MySQL close', err);
   });
 });
+
 mysqlFront.query("select * from spotlight_category",  (error, elements)=>{
-            if(error){
-                console.log("Error on loading database"+error);
-            }
-            console.log("First query to db with contents"+elements);
-        });
+	if(error){
+		console.log("Error on loading database"+error);
+	}
+	console.log("First query to db with contents"+elements);
+});
 
 module.exports = mysqlFront;
 
 module.exports.runQuery = (query) =>{
     return new Promise((resolve, reject)=>{
         mysqlFront.query(query,  (error, elements)=>{
-            if(error){
+            //mysqlFront.release();
+			if(error){
                 return reject(error);
             }
             return resolve(elements);
@@ -38,7 +43,8 @@ module.exports.runQuery = (query) =>{
 module.exports.runInsertQuery = (query,items) =>{
     return new Promise((resolve, reject)=>{
         mysqlFront.query(query,items,  (error, elements)=>{
-            if(error){
+            //mysqlFront.release();
+			if(error){
                 return reject(error);
             }
             return resolve(elements);

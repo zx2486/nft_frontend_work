@@ -28,7 +28,7 @@ app.use(cookieParser('solon_is_handsome'));
 //Multiform data handling
 const multer  = require('multer');
 //const upload = multer({ dest: 'uploads/' });
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads')
   },
@@ -38,6 +38,9 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage: storage });
+*/
+const storageS3 = require("./imageUpload");
+const upload = multer({ storage: storageS3 });
 //app.use(express.limit('20M')); //Limit file upload to be 20MB or below
 
 
@@ -519,16 +522,49 @@ router.get('/trade', function(req,res){
 	});
 });
 
-router.get('/create-item', function(req,res){
+router.get('/create-item', async function(req,res){
 	var pagetitle = "Create Item";
 	/*Related to the boy*/
-	var profile = {
-		name: "Bill Star",
-		title: "Creative KOL",
-		description: "A famous star who have a lot of ideas on NFT",
-		shortAddr: "Xjo03s-osi6732...",
-		longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
-	};
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress:"Xjo03s-osi6732asdasd-5465460-fgdfgdfg";
+	var profile = { };
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author WHERE LOWER(longAddr) = LOWER("'
+	+address+'") LIMIT 0,2' );
+	if(!itemDB) itemDB = [];
+	if(itemDB && itemDB.length >0 && itemDB[ 0 ] && itemDB[ 0 ].email){ 
+		profile.name = itemDB[ 0 ].authorname;
+		profile.title = itemDB[ 0 ].profileText;
+		profile.description = itemDB[ 0 ].description;
+		profile.shortAddr = (address.length >14)? address.substring(0,14)+"..." : address;
+		profile.longAddr = address;
+		profile.id = itemDB[ 0 ].authorid;
+		if(itemDB[ 0 ].authorimg){
+			if(isJson(itemDB[ 0 ].authorimg)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorimg);
+				profile.authorimg = authorimgObj.local;
+				profile.authorIPFSimg = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorimg = itemDB[ 0 ].authorimg;
+		}else profile.authorimg = "/img/art-work/profile-header.jpg";
+		if(itemDB[ 0 ].authorheader){
+			if(isJson(itemDB[ 0 ].authorheader)){
+				var authorimgObj = JSON.parse(itemDB[ 0 ].authorheader);
+				profile.authorheader = authorimgObj.local;
+				profile.authorIPFSheader = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
+			}else profile.authorheader = itemDB[ 0 ].authorheader;
+		}else profile.authorheader = "/img/authors/2.png";
+		if(itemDB[ 0 ].socialnetwork && isJson(itemDB[ 0 ].socialnetwork)){
+			profile.socialnetwork = JSON.parse(itemDB[ 0 ].socialnetwork);
+		}else profile.socialnetwork = {};
+	}else{	
+		profile = {
+			id: 0,
+			name: "Bill Star",
+			title: "Creative KOL",
+			description: "A famous star who have a lot of ideas on NFT",
+			shortAddr: "Xjo03s-osi6732...",
+			longAddr: "Xjo03s-osi6732asdasd-5465460-fgdfgdfg",
+			socialnetwork: {}
+		};
+	}
 	res.render('pages/create-item', {
 		pagetitle: pagetitle,
 		profile: profile,
@@ -551,15 +587,15 @@ router.get('/profile', async function(req,res){
 		if(itemDB[ 0 ].authorimg){
 			if(isJson(itemDB[ 0 ].authorimg)){
 				var authorimgObj = JSON.parse(itemDB[ 0 ].authorimg);
-				profile.authorimg = '/uploads/'+authorimgObj.local;
-				profile.authorIPFSimg = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+				profile.authorimg = authorimgObj.local;
+				profile.authorIPFSimg = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
 			}else profile.authorimg = itemDB[ 0 ].authorimg;
 		}else profile.authorimg = "/img/art-work/profile-header.jpg";
 		if(itemDB[ 0 ].authorheader){
 			if(isJson(itemDB[ 0 ].authorheader)){
 				var authorimgObj = JSON.parse(itemDB[ 0 ].authorheader);
-				profile.authorheader = '/uploads/'+authorimgObj.local;
-				profile.authorIPFSheader = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+				profile.authorheader = authorimgObj.local;
+				profile.authorIPFSheader = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
 			}else profile.authorheader = itemDB[ 0 ].authorheader;
 		}else profile.authorheader = "/img/authors/2.png";
 		if(itemDB[ 0 ].socialnetwork && isJson(itemDB[ 0 ].socialnetwork)){
@@ -636,15 +672,15 @@ router.get('/profile/:profileid', async function(req,res){
 		if(itemDB[ 0 ].authorimg){
 			if(isJson(itemDB[ 0 ].authorimg)){
 				var authorimgObj = JSON.parse(itemDB[ 0 ].authorimg);
-				profile.authorimg = '/uploads/'+authorimgObj.local;
-				profile.authorIPFSimg = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+				profile.authorimg = authorimgObj.local;
+				profile.authorIPFSimg = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
 			}else profile.authorimg = itemDB[ 0 ].authorimg;
 		}else profile.authorimg = "/img/art-work/profile-header.jpg";
 		if(itemDB[ 0 ].authorheader){
 			if(isJson(itemDB[ 0 ].authorheader)){
 				var authorimgObj = JSON.parse(itemDB[ 0 ].authorheader);
-				profile.authorheader = '/uploads/'+authorimgObj.local;
-				profile.authorIPFSheader = 'https://ipfs.io/ipfs/'+authorimgObj.ipfs;
+				profile.authorheader = authorimgObj.local;
+				profile.authorIPFSheader = 'https://gateway.ipfs.io/ipfs/'+authorimgObj.ipfs;
 			}else profile.authorheader = itemDB[ 0 ].authorheader;
 		}else profile.authorheader = "/img/authors/2.png";
 		if(itemDB[ 0 ].socialnetwork && isJson(itemDB[ 0 ].socialnetwork)){
@@ -697,16 +733,46 @@ router.get('/profile/:profileid', async function(req,res){
 	});
 });
 
-router.get('/nft-holding', function(req,res){
+router.get('/nft-holding', async function(req,res){
 	var pagetitle = "NFT Holding";
-	/* optional attributes
-	instagram
-	facebook
-	twitter
-	linkedin
-	*/
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress:"Xjo03s-osi6732asdasd-5465460-fgdfgdfg";
+	var profile = { };
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_author WHERE LOWER(longAddr) = LOWER("'
+	+address+'") LIMIT 0,2' );
+	if(!itemDB) itemDB = [];
+	if(itemDB && itemDB.length >0 && itemDB[ 0 ] && itemDB[ 0 ].email){ 	
+		profile.id = itemDB[ 0 ].authorid;
+	}else{	
+		profile = {
+			id: 0,
+		};
+	}
 	/*Related to items*/
-	var category = [
+	var categoryDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_category' );
+	//console.log(categoryDB);
+	if(!categoryDB) categoryDB = [];
+	//Add the dot in class
+	for ( const i in categoryDB ) {
+		if(categoryDB[ i ] && categoryDB[ i ].tag) 
+			categoryDB[ i ].tag = '.'+categoryDB[ i ].tag;
+	}
+	var category = [ { tag: '*', name: "All"}, ];
+	for ( const i in categoryDB ) {
+		category.push(categoryDB[ i ]);
+	}
+	var itemDB = await mysqlFront.runQuery( 'SELECT a.*, b.authorname as author, b.authorimg FROM spotlight_item a INNER JOIN spotlight_author b ON a.authorid = b.authorid WHERE b.authorid = '+profile.id );
+	if(!itemDB) itemDB = [];
+	for ( const i in itemDB ) {
+		var updatetime = (itemDB[i].updatetime)? itemDB[i].updatetime : itemDB[i].dt_create_time ;
+		var relativeTime = new moment(updatetime).fromNow();
+		itemDB[i].updatetime = (relativeTime)? relativeTime : updatetime;
+	}
+	var items = [ ];
+	for ( const i in itemDB ) {
+		items.push(itemDB[ i ]);
+	}
+	/*Related to items*/
+	/*var category = [
 		{ tag: '*', name: "All"},
 		{ tag: '.branding', name: "Branding"},
 		{ tag: '.design', name: "Design"},
@@ -746,6 +812,7 @@ router.get('/nft-holding', function(req,res){
 		updatetime: "0.25 Hour Ago",likes: "26"
 		},
 	];
+	*/
 	res.render('pages/profile', {
 		pagetitle: pagetitle,
 		category: category,
@@ -787,7 +854,7 @@ router.post('/register', async function(req,res){
 
 router.post('/editprofile'
 , upload.fields([{ name: 'profile-header', maxCount: 1 }, { name: 'profile-img', maxCount: 1 }])
-, async function(req,res){
+, function(req,res){
 	//console.log(req.body);
 	var returnObj = {};
 	returnObj.result = "failed";
@@ -799,7 +866,7 @@ router.post('/editprofile'
 	}
 	//console.log("Before the req bdody check"+req.body);
 	if(req.body && req.body.name && req.body.wallet && req.body.signatureObject){
-		//console.log("Current path");
+		//console.log("Correct path");
 		var name = req.body.name;
 		//var email = req.body.email;
 		var clientWallet = req.body.wallet;
@@ -812,20 +879,96 @@ router.post('/editprofile'
 		}
 		//req.files['profile-header'][0] -> File
 		//req.body will contain the text fields
-		var newProfileHeader = false;
+		//var newProfileHeader = false;
 		if(req.files && req.files['profile-header'] && req.files['profile-header'][0]){
 			//There is a new profile header image
-			var IPFSHash = await ipfsClient.add(req.files['profile-header'][0]);
+			/*ipfsClient.add(req.files['profile-header'][0]).then((IPFSHash) => {
+				if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
+				var newProfileHeader = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+				var updateStatement = 'UPDATE spotlight_author SET authorheader = ? WHERE longAddr = ? ';
+				var updateArray = [newProfileHeader,address];
+				console.log("Start updating authorheader");
+				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+					if(error){
+						console.log("Cannot update profile for authorheader"+error);
+					}
+					console.log("Successfully update profile"+elements);
+					//return resolve(elements);
+				});
+			}).catch((err) => {
+				console.log("Cannot update data to IPFS"+err);
+				var newProfileHeader = JSON.stringify({ ipfs: "0000000000000000", local: localImageName});
+				var updateStatement = 'UPDATE spotlight_author SET authorheader = ? WHERE longAddr = ? ';
+				var updateArray = [newProfileHeader,address];
+				console.log("Start updating authorheader");
+				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+					if(error){
+						console.log("Cannot update profile for authorheader"+error);
+					}
+					console.log("Successfully update profile"+elements);
+					//return resolve(elements);
+				});
+			});
+			*/
+			/*var IPFSHash = await ipfsClient.add(req.files['profile-header'][0]);
 			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
-			var localImageName = req.files['profile-header'][0].filename;
+			*/
+			var IPFSHash = "0000000000000000";
+			console.log("about header"+req.files['profile-header'][0].location);
+			var localImageName = req.files['profile-header'][0].location;
 			newProfileHeader = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
 		}
-		var newProfileImage = false;
+		//var newProfileImage = false;
 		if(req.files && req.files['profile-img'] && req.files['profile-img'][0]){
 			//There is a new profile image
-			var IPFSHash = await ipfsClient.add(req.files['profile-img'][0]);
+			/*var localImageName = req.files['profile-img'][0].filename;
+			var IPFSHash = "00000000";
+			var newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+			var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
+			var updateArray = [newProfileImage,address];
+			//console.log("Start updating authorimg");
+			mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+				if(error){
+					console.log("Cannot update profile for authorimg"+error);
+				}
+				//console.log("Successfully update profile"+elements);
+				//return resolve(elements);
+			});
+			*/
+			/*ipfsClient.add(req.files['profile-img'][0]).then((IPFSHash) => {
+				if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
+				var newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+				var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
+				var updateArray = [newProfileImage,address];
+				console.log("Start updating authorimg");
+				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+					if(error){
+						console.log("Cannot update profile for authorimg"+error);
+					}
+					//console.log("Successfully update profile"+elements);
+					//return resolve(elements);
+				});
+			}).catch((err) => {
+				console.log("Cannot update data to IPFS"+err);
+				var newProfileImage = JSON.stringify({ ipfs: "0000000000000000", local: localImageName});
+				var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
+				var updateArray = [newProfileImage,address];
+				console.log("Start updating authorimg");
+				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+					if(error){
+						console.log("Cannot update profile for authorimg"+error);
+					}
+					//console.log("Successfully update profile"+elements);
+					//return resolve(elements);
+				});
+			});
+			*/
+			/*var IPFSHash = await ipfsClient.add(req.files['profile-img'][0]);
 			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
-			var localImageName = req.files['profile-img'][0].filename;
+			*/
+			var IPFSHash = "0000000000000000";
+			console.log("about img"+req.files['profile-img'][0].location);
+			var localImageName = req.files['profile-img'][0].location;
 			newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
 		}
 		var title = req.body.title;
@@ -848,11 +991,21 @@ router.post('/editprofile'
 			updateStatement += ", authorimg = ?";
 			updateArray.push(newProfileImage);
 		}
+		
 		updateStatement += 'WHERE longAddr = ? ';
 		updateArray.push(address);
 		
-		var updateResult = await mysqlFront.runInsertQuery(updateStatement,updateArray);
-		console.log("new update id"+updateResult+" and "+updateResult.insertId);
+		//var updateResult = await mysqlFront.runInsertQuery(updateStatement,updateArray);
+		//console.log("new update id"+updateResult+" and "+updateResult.insertId);
+		//console.log("Start updating profile");
+		mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+            if(error){
+                console.log("Cannot update profile"+error);
+            }
+			//console.log("Successfully update profile"+elements);
+			//mysqlFront.release();
+            //return resolve(elements);
+        });
 		returnObj.result = "success";
 		//returnObj.insertId = updateResult.insertId;
 	}
