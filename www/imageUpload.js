@@ -2,9 +2,9 @@ const multers3 = require('multer-s3');
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3({
-    accessKeyId: 'AKIAUEQJTBWRUCMVWQU4',
-    secretAccessKey: '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',
-	region: "ap-southeast-1"
+    accessKeyId: process.env.S3_accessKeyId,
+    secretAccessKey: process.env.S3_secretAccessKey,
+	region: process.env.S3_region,
 });
 
 const storageS3 = multers3({
