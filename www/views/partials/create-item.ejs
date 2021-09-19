@@ -103,19 +103,79 @@
                             <h4 class="fadeInUp" data-wow-delay="0.3s">Create Item</h4>
                         </div>
                         <div class="contact_form">
-                            <form action="#" method="post" id="main_upload_form" novalidate>
+                            <form action="/createNewStep1" method="post" 
+								id="main_upload_form" novalidate>
                                 <div class="row">
                                     <div class="col-12">
                                         <div id="success_fail_info"></div>
                                     </div>
-
+									<style>
+									#my-file-selector{
+										opacity: 0.0;
+										position: absolute;
+										top: 0;
+										left: 0;
+										bottom: 0;
+										right: 0;
+										width: 100%;
+										height: 100%;
+										z-index: 100;
+									}
+									</style>
                                     <div class="col-12 col-md-12">
                                         <p class="w-text">Upload Item File</p>
                                         <div class="group-file">
                                             <p class="g-text">PNG, GIF, WEBP, MP4 or MP3. Max 10mb</p>
-                                            <div class="new_Btn more-btn">Upload File</div><br>
-                                            <input type="file" name="upload" id="upload-btn" required>
+                                            <div class="new_Btn more-btn"><input id="my-file-selector" 
+											name="profile-header" type="file" 
+									accept="image/*,audio/mp3,video/mp4" onChange='changeImg(this,"item-header","video-header")'>
+									Upload File</div><br>
                                             
+									
+                                            <img id="item-header" 
+											class="center-block" style="display:none">
+												
+											</img>
+											<video width="400" class="center-block" style="display:none" controls>
+											  <source src="#" id="video-header">
+												Your browser does not support HTML5 video.
+											</video>
+											<script>
+											function changeImg(target,imageID,videoID){
+												//console.log(target.files[0],imageID);
+												//$().attr('src', e.target.result);
+												if(target && target.files[0]){
+													if(target.files[0].size > 10*1048576){
+													   alert("Please limit the file size to be 10MB or below.");
+													   target.value = "";
+													}else{ 
+														var validExtensions = ["jpg", "jpeg", "gif", "png","JPG", "JPEG", "GIF", "PNG"];
+														var ext = target.files[0].name.split('.').pop();
+														if (validExtensions.indexOf(ext) > -1) {
+															document.getElementById(imageID).style.display = "block";
+															document.getElementById(videoID).parentNode.style.display = "none";
+															readURL(target.files[0],'#'+imageID);
+														}
+														var validExtensions = ["mp4","MP4"];
+														if (validExtensions.indexOf(ext) > -1) {
+															document.getElementById(imageID).style.display = "none";
+															document.getElementById(videoID).parentNode.style.display = "block";
+															var $source = $('#'+videoID);
+															  $source[0].src = URL.createObjectURL(target.files[0]);
+															  $source.parent()[0].load();
+														}
+													}
+												}
+											}
+											function readURL(src,pointingID){
+												if(!src) return;
+												var reader = new FileReader();	        
+												reader.onload = function (e) {
+													$(pointingID).attr('src', e.target.result);
+												}
+												reader.readAsDataURL(src);
+											}
+											</script>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12">
@@ -129,10 +189,34 @@
                                     <div class="col-12 col-md-12">
                                         <div class="mb-15">
                                             <p>Choose item Category</p>
+											<script>
+											function makeButtonActive(theButton,inputIDD,tagName){
+												if(theButton.classList.contains("active")){
+													theButton.classList.remove("active");
+													theButton.classList.add("noactive");
+													document.getElementById(inputIDD).value = 
+													document.getElementById(inputIDD).value
+													.replace(" "+tagName,"");
+												}else{
+													theButton.classList.add("active");
+													theButton.classList.remove("noactive");
+													document.getElementById(inputIDD).value += " "+tagName;
+												}
+											}
+											</script>
                                             <div class="filers-list ">
-                                                <a href="#" class="filter-item">
+											<input type="hidden" id="categoryArray" 
+												name="categoryArray" value=""/>
+											<% category.forEach(function(onecat) { %>
+												<button type="button" class="filter-item btn" 
+												onclick="makeButtonActive(this,'categoryArray','<%= onecat.tag %>')">
+												<img src="<%= onecat.imagePath %>" alt=""><%= onecat.name %>
+												</button>
+											<% }); %>
+                                                <!--<a href="#" class="filter-item">
                                                     <img src="img/icons/f1.png" alt="">Art
                                                 </a>
+												
                                                 <a href="#" class="filter-item">
                                                     <img src="img/icons/f5.png" alt="">Virtual Worlds
                                                 </a>
@@ -150,19 +234,20 @@
                                                 </a>
                                                 <a href="#" class="filter-item">
                                                     <img src="img/icons/f7.png" alt="">Trading Cards
-                                                </a>
+                                                </a>-->
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="group">
-                                            <textarea name="Description" id="Description" required></textarea>
+                                            <textarea name="Description" id="Description" name="Description" required></textarea>
                                             <span class="highlight"></span>
                                             <span class="bar"></span>
                                             <label>Item Description</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12">
+									<input type="hidden" id="signatureObject" name="signatureObject" value="">
+                                    <!--<div class="col-12 col-md-12">
                                         <div class="group">
                                             <input type="text" name="Price" id="Price" required>
                                             <span class="highlight"></span>
@@ -194,12 +279,65 @@
                                             <label>Number of copies</label>
                                         </div>
                                     </div>
-                                    
+                                    -->
                                     <div class="col-12 text-center">
-                                        <button type="submit" class="more-btn mb-15">Create Item</button>
+                                        <button type="button" onclick="onSubmitForm()"
+										class="more-btn mb-15">Create Item</button>
                                     </div>
                                 </div>
                             </form>
+							<script>
+							function onSubmitForm(){
+								if(!$("#name")[0].value || !$("#my-file-selector")[0].value 
+								|| !$("#Description")[0].value){
+									alert("Please fill in the required information");
+									return false;
+								}
+								if(!provider || !localStorage.getItem('myAccount')){
+									alert("Not connected with valid wallet");
+									return false;
+								}
+								//alert("This is done");
+								const web3 = new Web3(provider);
+								mintToken(function(signatureObject){
+									console.log(signatureObject);
+									if(signatureObject){
+										document.getElementById("signatureObject").value = signatureObject;
+										fireForm(true);
+									}
+								});
+								return false;
+							}
+							function fireForm(isAgain){
+								var formData = new FormData($("#main_upload_form")[0]);
+								$.ajax({
+								   type: "POST",
+								   url: "/createNewStep1",
+								   data: formData,
+								   processData: false,
+									contentType: false,
+									cache: false,
+								   success: function(data)
+								   {
+										if(!data || typeof data !== "object"){
+											alert("Cannot create item :"+data);
+											return;
+										}else{
+											var insertID = data;
+											insertID = (insertID.result)? insertID.result : false;
+											if(insertID && insertID =="success"){
+												alert("Data is submitted. Please wait for the transaction to be completed.");
+												location.reload();
+											}else{
+												if(isAgain) fireForm(false);
+												else alert("Data cannot be submitted. Please submit again.");
+											}
+											//location.reload();
+										}
+								   }
+								 });
+							}
+							</script>
                         </div>
                     </div>
                 </div>

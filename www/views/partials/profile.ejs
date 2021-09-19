@@ -179,34 +179,40 @@
 							var signatureObject = web3.eth.personal.sign(web3.utils.utf8ToHex("Confirm editing the information"), localStorage.getItem('myAccount'),"solon is handsome"+new Date().getTime())
 							.then(function(signatureObject){
 								if(signatureObject){
-									var formData = new FormData($("#editForm")[0]);
 									document.getElementById("signatureObject").value = signatureObject;
-									$.ajax({
-									   type: "POST",
-									   url: "/editprofile",
-									   data: formData,
-									   processData: false,
-										contentType: false,
-										cache: false,
-									   success: function(data)
-									   {
-											if(!data || typeof data !== "object"){
-												alert("Edit profile failed:"+data);
-												return;
-											}else{
-												var insertID = data;
-												insertID = (insertID.result)? insertID.result : false;
-												if(insertID && insertID =="success"){
-													alert("Edit profile submitted. Please wait for the profile update.");
-													location.reload();
-												}else alert("Edit profile failed. Please retry");
-												//location.reload();
-											}
-									   }
-									 });
+									fireForm(true);
 								}
 							});									
 							return false;
+						}
+						function fireForm(isAgain){
+							var formData = new FormData($("#editForm")[0]);
+							$.ajax({
+							   type: "POST",
+							   url: "/editprofile",
+							   data: formData,
+							   processData: false,
+								contentType: false,
+								cache: false,
+							   success: function(data)
+							   {
+									if(!data || typeof data !== "object"){
+										alert("Edit profile failed:"+data);
+										return;
+									}else{
+										var insertID = data;
+										insertID = (insertID.result)? insertID.result : false;
+										if(insertID && insertID =="success"){
+											alert("Edit profile submitted. Please wait for the profile update.");
+											location.reload();
+										}else{
+											if(isAgain) fireForm(false);
+											else alert("Data cannot be submitted. Please submit again.");
+										}
+										//location.reload();
+									}
+							   }
+							 });
 						}
 						</script>
 					<% }else{ %>

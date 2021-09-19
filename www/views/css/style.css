@@ -5312,7 +5312,13 @@ textarea:required {
     margin-bottom: 15px;
 	background: rgba(191, 191, 191, .6);
 }
-.filter-item:hover{color: #917af9}
+.filter-item:hover,.filter-item.active{
+	color: #917af9;
+	box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+}
+.filter-item.noactive:focus{
+	box-shadow:none;
+}
 .filter-item img{
     padding-right: 10px;
     max-width: 25px

@@ -1,3 +1,4 @@
+require('dotenv').config(); //Load config from .env file
 const express = require('express');
 const app = express();
 
@@ -565,9 +566,17 @@ router.get('/create-item', async function(req,res){
 			socialnetwork: {}
 		};
 	}
+	var categoryDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_category' );
+	//console.log(categoryDB);
+	if(!categoryDB) categoryDB = [];
+	var category = [ ];
+	for ( const i in categoryDB ) {
+		category.push(categoryDB[ i ]);
+	}
 	res.render('pages/create-item', {
 		pagetitle: pagetitle,
 		profile: profile,
+		category: category,
 	});
 });
 router.get('/profile', async function(req,res){
@@ -772,47 +781,6 @@ router.get('/nft-holding', async function(req,res){
 		items.push(itemDB[ i ]);
 	}
 	/*Related to items*/
-	/*var category = [
-		{ tag: '*', name: "All"},
-		{ tag: '.branding', name: "Branding"},
-		{ tag: '.design', name: "Design"},
-		{ tag: '.development', name: "Development"}
-	];
-	var items = [
-		{ itemid: 1, tag: "branding", title: "Scarecrow in daylight", img:"img/art-work/1.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:0.081,bid:0.081,
-		updatetime: "6 Hours Ago",likes: "134"
-		},
-		{ itemid: 2, tag: "design", title: "Resonate Sanctuary II", img:"img/art-work/2.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 3, tag: "development", title: "Analogue refraction #3", img:"img/art-work/3.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:2,
-		updatetime: "2.5 Hours Ago",likes: "211"
-		},
-		{ itemid: 4, tag: "design", title: "Scarecrow in daylight", img:"img/art-work/4.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,bid:0.5,
-		updatetime: "1.25 Hour Ago",likes: "121"
-		},
-		{ itemid: 5, tag: "branding", title: "Super-Neumorphism #7", img:"img/art-work/5.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "843"
-		},
-		{ itemid: 6, tag: "development", title: "Exe Dream Sequence", img:"img/art-work/6.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.5 Hour Ago",likes: "322"
-		},
-		{ itemid: 7, tag: "design", title: "Darklight Angel 01", img:"img/art-work/7.png",
-		author: "@Smith Wright",authorimg: "img/authors/1.png",authorid: 1,price:3.3,bid:2.8,
-		updatetime: "1 Hour Ago",likes: "123"
-		},
-		{ itemid: 8, tag: "development", title: "Becoming one with Nature", img:"img/art-work/8.png",
-		author: "@Hey",authorimg: "img/authors/2.png",authorid: 2,price:3.3,bid:2.8,
-		updatetime: "0.25 Hour Ago",likes: "26"
-		},
-	];
-	*/
 	res.render('pages/profile', {
 		pagetitle: pagetitle,
 		category: category,
@@ -882,34 +850,6 @@ router.post('/editprofile'
 		//var newProfileHeader = false;
 		if(req.files && req.files['profile-header'] && req.files['profile-header'][0]){
 			//There is a new profile header image
-			/*ipfsClient.add(req.files['profile-header'][0]).then((IPFSHash) => {
-				if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
-				var newProfileHeader = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
-				var updateStatement = 'UPDATE spotlight_author SET authorheader = ? WHERE longAddr = ? ';
-				var updateArray = [newProfileHeader,address];
-				console.log("Start updating authorheader");
-				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
-					if(error){
-						console.log("Cannot update profile for authorheader"+error);
-					}
-					console.log("Successfully update profile"+elements);
-					//return resolve(elements);
-				});
-			}).catch((err) => {
-				console.log("Cannot update data to IPFS"+err);
-				var newProfileHeader = JSON.stringify({ ipfs: "0000000000000000", local: localImageName});
-				var updateStatement = 'UPDATE spotlight_author SET authorheader = ? WHERE longAddr = ? ';
-				var updateArray = [newProfileHeader,address];
-				console.log("Start updating authorheader");
-				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
-					if(error){
-						console.log("Cannot update profile for authorheader"+error);
-					}
-					console.log("Successfully update profile"+elements);
-					//return resolve(elements);
-				});
-			});
-			*/
 			/*var IPFSHash = await ipfsClient.add(req.files['profile-header'][0]);
 			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
 			*/
@@ -921,48 +861,6 @@ router.post('/editprofile'
 		//var newProfileImage = false;
 		if(req.files && req.files['profile-img'] && req.files['profile-img'][0]){
 			//There is a new profile image
-			/*var localImageName = req.files['profile-img'][0].filename;
-			var IPFSHash = "00000000";
-			var newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
-			var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
-			var updateArray = [newProfileImage,address];
-			//console.log("Start updating authorimg");
-			mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
-				if(error){
-					console.log("Cannot update profile for authorimg"+error);
-				}
-				//console.log("Successfully update profile"+elements);
-				//return resolve(elements);
-			});
-			*/
-			/*ipfsClient.add(req.files['profile-img'][0]).then((IPFSHash) => {
-				if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
-				var newProfileImage = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
-				var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
-				var updateArray = [newProfileImage,address];
-				console.log("Start updating authorimg");
-				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
-					if(error){
-						console.log("Cannot update profile for authorimg"+error);
-					}
-					//console.log("Successfully update profile"+elements);
-					//return resolve(elements);
-				});
-			}).catch((err) => {
-				console.log("Cannot update data to IPFS"+err);
-				var newProfileImage = JSON.stringify({ ipfs: "0000000000000000", local: localImageName});
-				var updateStatement = 'UPDATE spotlight_author SET authorimg = ? WHERE longAddr = ? ';
-				var updateArray = [newProfileImage,address];
-				console.log("Start updating authorimg");
-				mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
-					if(error){
-						console.log("Cannot update profile for authorimg"+error);
-					}
-					//console.log("Successfully update profile"+elements);
-					//return resolve(elements);
-				});
-			});
-			*/
 			/*var IPFSHash = await ipfsClient.add(req.files['profile-img'][0]);
 			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
 			*/
@@ -1013,8 +911,79 @@ router.post('/editprofile'
 	res.json(returnObj);
 });
 
-router.get('/login-process', function(req,res){
-	/* TODO: Create login section in Redis and detect if the user is signed up or not */
+router.post('/createNewStep1' 
+, upload.fields([{ name: 'profile-header', maxCount: 1 }])
+, function(req,res){
+	var returnObj = {};
+	returnObj.result = "failed";
+	var address = (req.signedCookies.loginAddress)? req.signedCookies.loginAddress:false;
+	if(!address){
+		returnObj.msg = "Please login first";
+		res.json(returnObj);
+		return;
+	}
+	if(req.body && req.body.name && req.body.signatureObject){
+		//console.log("Correct path");
+		var name = req.body.name;
+		var description = req.body.Description;
+		var tagLine = req.body.categoryArray;
+		if(tagLine) tagLine = tagLine.trim();
+		//var email = req.body.email;
+		var clientWallet = req.body.wallet;
+		var createHash = req.body.signatureObject;
+		//var actualAddress = web3.web3Verify(address,"Confirm editing the information",signatureObject);
+		if(!createHash){
+			returnObj.msg = "Please create NFT";
+			res.json(returnObj);
+			return;
+		}
+		var newProfileHeader = false;
+		if(req.files && req.files['profile-header'] && req.files['profile-header'][0]){
+			//There is a new profile header image
+			/*var IPFSHash = await ipfsClient.add(req.files['profile-header'][0]);
+			if(IPFSHash) IPFSHash = ""+IPFSHash.cid;
+			*/
+			var IPFSHash = "0000000000000000";
+			console.log("about header"+req.files['profile-header'][0].location);
+			var localImageName = req.files['profile-header'][0].location;
+			newProfileHeader = JSON.stringify({ ipfs: IPFSHash, local: localImageName});
+		}
+					
+		var updateStatement = (newProfileHeader)? 
+		'INSERT INTO spotlight_item(tag,title,img,des,txhash,address) VALUES(?,?,?,?,?,?)':
+		'INSERT INTO spotlight_item(tag,title,des,txhash,address) VALUES(?,?,?,?,?)';
+		var updateArray = (newProfileHeader)? 
+		[tagLine,name,newProfileHeader,description,createHash,address]:
+		[tagLine,name,description,createHash,address];
+	
+		mysqlFront.query(updateStatement,updateArray,  (error, elements)=>{
+            if(error){
+                console.log("Cannot insert new NFT into database: "+error);
+            }
+        });
+		returnObj.result = "success";
+		//returnObj.insertId = updateResult.insertId;
+	}
+	
+	res.json(returnObj);
+	
+});
+
+router.get('/createNewStep2', async function(req,res){
+	var itemDB = await mysqlFront.runQuery( 'SELECT * FROM spotlight_item WHERE contractID IS NULL AND txhash is NOT NULL LIMIT 0,10' );
+	for ( const i in itemDB ) {
+		//items.push(itemDB[ i ]);
+		var itemID = itemDB[ i ].itemid;
+		var txhash = itemDB[ i ].txhash;
+		var address = itemDB[ i ].address;
+		var receipt = web3.eth.getTransactionReceipt(txhash).then(console.log);
+				
+	}
+	
+	var returnObj = {};
+	returnObj.result = "success";
+	returnObj.items = itemDB;
+	res.json(returnObj);
 });
 
 router.get('/getEmail/:address', async function(req,res){
